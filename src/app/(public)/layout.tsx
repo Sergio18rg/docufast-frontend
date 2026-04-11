@@ -1,6 +1,6 @@
 "use client";
 
-import { PublicHeader } from "@/components/layout/public-header";
+import { PublicHeader } from "@/components";
 
 const PublicLayout = ({ children }: { children: React.ReactNode }) => {
   return (

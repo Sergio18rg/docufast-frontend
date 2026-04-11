@@ -8,15 +8,13 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+  Button,
+} from "@/components";
 import { useIsMobile } from "@/hooks";
 import { ROUTES, NAV_ITEMS } from "@/constants";
 import { t } from "@/lib/t";

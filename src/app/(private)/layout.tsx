@@ -4,8 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks";
 import { ROUTES } from "@/constants";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SidebarProvider, SidebarTrigger, AppSidebar } from "@/components";
 
 const PrivateLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();

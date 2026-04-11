@@ -7,9 +7,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { getProfile } from "@/services/auth.service";
+import { getProfile } from "@/services";
 import { getToken, removeToken, saveToken } from "@/lib/auth";
-import type { AuthUser } from "@/types/auth.types";
+import type { AuthUser } from "@/types";
 
 type AuthContextValue = {
   user: AuthUser | null;

@@ -1,6 +1,6 @@
 "use client";
 
-import { RoleGuard } from "@/components/auth/role-guard";
+import { RoleGuard } from "@/components";
 import { ROLES } from "@/constants";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {

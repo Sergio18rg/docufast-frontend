@@ -1,6 +1,6 @@
 "use client";
 
-import { RoleGuard } from "@/components/auth/role-guard";
+import { RoleGuard } from "@/components";
 import { ROLES } from "@/constants";
 
 const WorkersLayout = ({ children }: { children: React.ReactNode }) => {
