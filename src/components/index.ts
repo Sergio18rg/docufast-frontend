@@ -6,8 +6,9 @@ export * from "./auth/role-guard";
 // LAYOUT
 export * from "./layout/app-sidebar";
 export * from "./layout/public-header";
+export * from "./layout/title";
 
-// UI
+// UI (Shadcn)
 export * from "./ui/avatar";
 export * from "./ui/badge";
 export * from "./ui/button";
@@ -26,3 +27,13 @@ export * from "./ui/skeleton";
 export * from "./ui/table";
 export * from "./ui/toggle";
 export * from "./ui/tooltip";
+export * from "./ui/spinner";
+
+// Shared
+export * from "./shared/custom-button";
+export * from "./shared/search-bar";
+export * from "./shared/toggle-button";
+export * from "./shared/custom-table";
+export * from "./shared/custom-input";
+export * from "./shared/serchable-select";
+export * from "./shared/custom-select";

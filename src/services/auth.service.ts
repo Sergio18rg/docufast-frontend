@@ -1,36 +1,34 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+import { apiRequest, getApiErrorMessage, METHODS } from "./api";
+
+const AUTH_URL = "/auth";
 
 const loginRequest = async (email: string, password: string) => {
-  const response = await fetch(`${API_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email,
-      password,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Invalid credentials");
+  try {
+    return await apiRequest<{ data: { accessToken: string; user: unknown } }>({
+      url: `${AUTH_URL}/login`,
+      method: METHODS.POST,
+      data: {
+        email,
+        password,
+      },
+    });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Invalid credentials"));
   }
-
-  return response.json();
 };
 
 const getProfile = async (token: string) => {
-  const response = await fetch(`${API_URL}/auth/profile`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Unauthorized");
+  try {
+    return await apiRequest({
+      url: `${AUTH_URL}/profile`,
+      method: METHODS.GET,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, "Unauthorized"));
   }
-
-  return response.json();
 };
 
 export { loginRequest, getProfile };
