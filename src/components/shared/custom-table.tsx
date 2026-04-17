@@ -95,9 +95,11 @@ const DocumentsCell = ({ documents }: DocumentsCellProps) => {
 const renderActions = ({
   onEdit,
   onDelete,
+  deleteIcon = ICONS.DELETE,
 }: {
   onEdit?: () => void;
   onDelete?: () => void;
+  deleteIcon?: React.ReactNode;
 }) => {
   if (!onEdit && !onDelete) return null;
   return (
@@ -116,7 +118,7 @@ const renderActions = ({
       {onDelete && (
         <CustomButton
           onClick={onDelete}
-          icon={ICONS.DELETE}
+          icon={deleteIcon}
           variant="outline"
           size="sm"
         />
@@ -156,8 +158,15 @@ const tableRowRenderer = (tableData: unknown[], tableRows: any) => {
         })}
 
         {renderActions({
-          onEdit: () => tableRows.ACTIONS.onEdit(data),
-          onDelete: () => tableRows.ACTIONS.onDelete(data),
+          onEdit: tableRows.ACTIONS?.onEdit
+            ? () => tableRows.ACTIONS.onEdit(data)
+            : undefined,
+          onDelete: tableRows.ACTIONS?.onDelete
+            ? () => tableRows.ACTIONS.onDelete(data)
+            : undefined,
+          deleteIcon: tableRows.ACTIONS?.getDeleteIcon
+            ? tableRows.ACTIONS.getDeleteIcon(data)
+            : ICONS.DELETE,
         })}
       </TableRow>
     );

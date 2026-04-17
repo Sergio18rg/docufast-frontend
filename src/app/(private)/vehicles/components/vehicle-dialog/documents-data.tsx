@@ -9,20 +9,24 @@ import {
   ICONS,
   Label,
 } from "@/components";
-import { SecurityLevel, Worker, WorkerDocument, WorkerPayload } from "@/types";
+import {
+  SecurityLevel,
+  VehicleDocument,
+  VehiclePayload,
+  VehicleSummary,
+} from "@/types";
 import { EMPTY_DOCUMENT } from "../../constants";
 import { FileText, ImageIcon } from "lucide-react";
 import { useAuth } from "@/hooks";
 import {
-  removeWorkerDocument,
-  uploadWorkerDocument,
-} from "@/services/workers.service";
-import { mapWorkerToForm } from "./worker-dialog";
+  removeVehicleDocument,
+  uploadVehicleDocument,
+} from "@/services/vehicles.service";
+import { mapVehicleToForm } from "./vehicle-dialog";
 import { API_BASE_URL } from "@/services";
 import { DocumentLoader } from "@/components/shared/document-loader";
 import { getDocumentVisual, isImage } from "@/app/(private)/utils";
 import {
-  DOCUMENT_STATUS,
   SECURITY_LEVEL_COLORS,
   SECURITY_LEVEL_STYLES,
   SECURITY_LEVELS,
@@ -30,24 +34,35 @@ import {
 
 const DocumentsData = ({
   form,
-  disabled,
   isViewMode,
   setForm,
   pendingFiles,
   setPendingFiles,
-  worker,
+  vehicle,
 }: {
-  form: WorkerPayload;
-  disabled?: boolean;
+  form: VehiclePayload;
   isViewMode: boolean;
-  setForm: React.Dispatch<React.SetStateAction<WorkerPayload>>;
+  setForm: React.Dispatch<React.SetStateAction<VehiclePayload>>;
   pendingFiles: Record<string, File | null>;
   setPendingFiles: React.Dispatch<
     React.SetStateAction<Record<string, File | null>>
   >;
-  worker: Worker;
+  vehicle: VehicleSummary | null;
 }) => {
   const { token } = useAuth();
+
+  const updateDocument = (
+    documentKey: string,
+    patch: Partial<VehicleDocument>,
+  ) =>
+    setForm((current) => ({
+      ...current,
+      documents: current.documents.map((document) =>
+        document.document_key === documentKey
+          ? { ...document, ...patch }
+          : document,
+      ),
+    }));
 
   const handleAddAdditionalDocument = () => {
     if (isViewMode) return;
@@ -62,52 +77,42 @@ const DocumentsData = ({
     setPendingFiles((current) => ({ ...current, [documentKey]: file }));
   };
 
-  const handleRemoveDocument = async (document: WorkerDocument) => {
-    if (isViewMode) return;
+  const handleInlineUpload = async (document: VehicleDocument) => {
+    const file = pendingFiles[document.document_key];
+    if (!vehicle?.vehicle_id || !token || !file) return;
+    const response = await uploadVehicleDocument(token, {
+      vehicleId: vehicle.vehicle_id,
+      document,
+      file,
+    });
+    setForm(mapVehicleToForm(response.data));
+    setPendingFiles((current) => ({
+      ...current,
+      [document.document_key]: null,
+    }));
+  };
 
-    if (worker?.worker_id && document.worker_document_id && token) {
-      const response = await removeWorkerDocument(
+  const handleRemoveDocument = async (document: VehicleDocument) => {
+    if (isViewMode) return;
+    if (vehicle?.vehicle_id && document.vehicle_document_id && token) {
+      const response = await removeVehicleDocument(
         token,
-        worker.worker_id,
-        document.worker_document_id,
+        vehicle.vehicle_id,
+        document.vehicle_document_id,
       );
-      setForm(mapWorkerToForm(response.data));
+      setForm(mapVehicleToForm(response.data));
+      setPendingFiles((current) => ({
+        ...current,
+        [document.document_key]: null,
+      }));
       return;
     }
-
     setForm((current) => ({
       ...current,
       documents: current.documents.filter(
         (item) => item.document_key !== document.document_key,
       ),
     }));
-  };
-
-  const updateDocument = (
-    documentKey: string,
-    patch: Partial<WorkerDocument>,
-  ) =>
-    setForm((current) => ({
-      ...current,
-      documents: current.documents.map((document) =>
-        document.document_key === documentKey
-          ? { ...document, ...patch }
-          : document,
-      ),
-    }));
-
-  const handleInlineUpload = async (document: WorkerDocument) => {
-    const file = pendingFiles[document.document_key];
-
-    if (!worker?.worker_id || !token || !file) return;
-
-    const response = await uploadWorkerDocument(token, {
-      workerId: worker.worker_id,
-      document,
-      file,
-    });
-
-    setForm(mapWorkerToForm(response.data));
     setPendingFiles((current) => ({
       ...current,
       [document.document_key]: null,
@@ -131,19 +136,12 @@ const DocumentsData = ({
       <CardContent className="space-y-4">
         {form.documents.map((document) => {
           const visual = getDocumentVisual(document.status);
-          const Icon =
-            document.document_key === "worker_photo" ||
-            isImage(document.mime_type)
-              ? ImageIcon
-              : FileText;
+          const Icon = isImage(document.mime_type) ? ImageIcon : FileText;
           const StatusIcon = visual.icon;
           const filePending = pendingFiles[document.document_key];
-
           const canRemove = document.is_predefined
-            ? document.status !== DOCUMENT_STATUS.NOT_UPLOADED &&
-              Boolean(document.file_url || document.worker_document_id)
+            ? Boolean(document.file_url || document.vehicle_document_id)
             : true;
-
           return (
             <div
               key={document.document_key}
@@ -184,14 +182,13 @@ const DocumentsData = ({
                     <CustomButton
                       variant="outline"
                       size="sm"
-                      icon={ICONS.DOWNLOAD}
+                      icon={ICONS.DELETE}
                       text={document.is_predefined ? "Remove file" : "Remove"}
                       onClick={() => void handleRemoveDocument(document)}
                     />
                   )}
                 </div>
               </div>
-
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <CustomInput
                   label="Type"
@@ -204,7 +201,7 @@ const DocumentsData = ({
                 />
                 <CustomInput
                   label="Name"
-                  disabled={disabled || document.is_predefined}
+                  disabled={isViewMode || document.is_predefined}
                   value={document.document_name}
                   onChange={(e) =>
                     updateDocument(document.document_key, {
@@ -247,8 +244,8 @@ const DocumentsData = ({
                 />
                 <CustomInput
                   label="Expiry Date"
-                  disabled={isViewMode}
                   type="date"
+                  disabled={isViewMode}
                   value={document.expiration_date || ""}
                   onChange={(e) =>
                     updateDocument(document.document_key, {
@@ -258,8 +255,8 @@ const DocumentsData = ({
                 />
                 <CustomInput
                   label="Notes"
-                  wrapperStyle="space-y-2 xl:col-span-2"
                   disabled={isViewMode}
+                  wrapperStyle="space-y-2 xl:col-span-2"
                   value={document.notes || ""}
                   onChange={(e) =>
                     updateDocument(document.document_key, {
@@ -271,7 +268,7 @@ const DocumentsData = ({
                   <DocumentLoader
                     document={document}
                     filePending={filePending}
-                    entityId={worker?.worker_id ?? null}
+                    entityId={vehicle?.vehicle_id ?? null}
                     handleDocumentFileChange={handleDocumentFileChange}
                     handleInlineUpload={handleInlineUpload}
                   />

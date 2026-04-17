@@ -7,6 +7,11 @@ type DocumentStatus =
 
 type SecurityLevel = "Internal" | "Private" | "External";
 
+type DialogMode = "create" | "edit" | "view";
+
+type Status = "Active" | "Absence" | "Inactive";
+
+type PredefinedDocument = { key: string; name: string; shortLabel?: string };
 interface Document {
   document_id?: number | null;
   document_key: string;
@@ -23,4 +28,11 @@ interface Document {
   notes?: string | null;
 }
 
-export type { Document, DocumentStatus, SecurityLevel };
+export type {
+  PredefinedDocument,
+  Document,
+  DocumentStatus,
+  SecurityLevel,
+  DialogMode,
+  Status,
+};

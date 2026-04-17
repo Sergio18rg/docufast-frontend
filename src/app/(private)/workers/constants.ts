@@ -1,18 +1,5 @@
-import { WorkerDocument, WorkerPayload } from "@/types";
-import { WorkerDialogMode } from "./types";
-
-const DIALOG_MODES = {
-  CREATE: "create",
-  EDIT: "edit",
-  VIEW: "view",
-} as Record<string, WorkerDialogMode>;
-
-const VEHICLE_TYPE = {
-  Dry: { label: "Dry", color: "#ced3db" },
-  Reefer: { label: "Reefer", color: "#9be0e8" },
-  Truck: { label: "Truck", color: "#e8be9b" },
-  Other: { label: "Other", color: "#b59be8" },
-};
+import { PredefinedDocument, WorkerDocument, WorkerPayload } from "@/types";
+import { createBaseDocument } from "../utils";
 
 const PREDEFINED_DOCUMENTS = [
   { key: "identity_document", name: "Identity document", shortLabel: "ID" },
@@ -27,22 +14,9 @@ const PREDEFINED_DOCUMENTS = [
   { key: "driver_report", name: "Driver report", shortLabel: "Report" },
 ];
 
-const EMPTY_DOCUMENT = (
-  definition?: (typeof PREDEFINED_DOCUMENTS)[number],
-): WorkerDocument => ({
+const EMPTY_DOCUMENT = (definition?: PredefinedDocument): WorkerDocument => ({
   worker_document_id: null,
-  document_key:
-    definition?.key ?? `additional-${Math.random().toString(36).slice(2, 10)}`,
-  document_name: definition?.name ?? "",
-  is_predefined: !!definition,
-  security_level: "Private",
-  status: "Not uploaded",
-  issue_date: new Date().toISOString().slice(0, 10),
-  expiration_date: new Date().toISOString().slice(0, 10),
-  notes: "",
-  file_name: null,
-  file_url: null,
-  mime_type: null,
+  ...createBaseDocument(definition),
 });
 
 const EMPTY_FORM: WorkerPayload = {
@@ -80,11 +54,4 @@ const TABLE = {
   ],
 };
 
-export {
-  VEHICLE_TYPE,
-  PREDEFINED_DOCUMENTS,
-  DIALOG_MODES,
-  EMPTY_FORM,
-  TABLE,
-  EMPTY_DOCUMENT,
-};
+export { PREDEFINED_DOCUMENTS, EMPTY_FORM, TABLE, EMPTY_DOCUMENT };

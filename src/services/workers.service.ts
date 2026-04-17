@@ -73,6 +73,13 @@ const uploadWorkerDocument = async (
   });
 };
 
+const restoreWorker = async (token: string, workerId: number) =>
+  apiRequest<ApiResponse<null>>({
+    url: `${WORKERS_URL}/${workerId}/restore`,
+    method: METHODS.POST,
+    headers: getAuthHeaders(token),
+  });
+
 const removeWorkerDocument = async (
   token: string,
   workerId: number,
@@ -91,4 +98,5 @@ export {
   deleteWorker,
   uploadWorkerDocument,
   removeWorkerDocument,
+  restoreWorker,
 };

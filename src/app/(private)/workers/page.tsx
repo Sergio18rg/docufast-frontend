@@ -8,25 +8,18 @@ import {
   createWorker,
   deleteWorker,
   getWorkers,
+  restoreWorker,
   updateWorker,
   uploadWorkerDocument,
 } from "@/services";
-import type { Worker, WorkerPayload } from "@/types";
-import {
-  PREDEFINED_DOCUMENTS,
-  DIALOG_MODES,
-  EMPTY_FORM,
-  TABLE,
-} from "./constants";
-import {
-  clientBadgeStyle,
-  getDocumentVisual,
-  vehicleBadgeStyle,
-} from "./utils";
-import { WorkerDialogMode } from "./types";
+import type { Worker, DialogMode, WorkerPayload } from "@/types";
+import { PREDEFINED_DOCUMENTS, EMPTY_FORM, TABLE } from "./constants";
+import { clientBadgeStyle } from "./utils";
 import { CustomButton, ICONS } from "@/components/shared/custom-button";
 import { SearchBar } from "@/components/shared/search-bar";
 import { CustomTable, Title, ToggleButton } from "@/components";
+import { DIALOG_MODES, DOCUMENT_STATUS } from "../constants";
+import { getDocumentVisual, vehicleBadgeStyle } from "../utils";
 
 const getDocumentByKey = (documents: Worker["documents"], key: string) =>
   documents.find((document) => document.document_key === key);
@@ -37,9 +30,7 @@ const WorkersPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState<WorkerDialogMode>(
-    DIALOG_MODES.CREATE,
-  );
+  const [dialogMode, setDialogMode] = useState<DialogMode>(DIALOG_MODES.CREATE);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [form, setForm] = useState<WorkerPayload>(EMPTY_FORM);
   const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>(
@@ -136,6 +127,18 @@ const WorkersPage = () => {
       );
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleRestore = async (worker: Worker) => {
+    if (!token) return;
+    try {
+      await restoreWorker(token, worker.worker_id);
+      await loadWorkers(token);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Unable to restore worker",
+      );
     }
   };
 
@@ -240,7 +243,7 @@ const WorkersPage = () => {
               worker.documents,
               definition.key,
             ) ?? {
-              status: "Not uploaded" as const,
+              status: DOCUMENT_STATUS.NOT_UPLOADED,
             };
             const visual = getDocumentVisual(document.status);
             return {
@@ -255,7 +258,12 @@ const WorkersPage = () => {
     ],
     ACTIONS: {
       onEdit: (worker: Worker) => openEditDialog(worker),
-      onDelete: (worker: Worker) => handleDelete(worker),
+      onDelete: (worker: Worker) =>
+        worker.status === "Inactive"
+          ? handleRestore(worker)
+          : handleDelete(worker),
+      getDeleteIcon: (worker: Worker) =>
+        worker.status === "Inactive" ? ICONS.RESTORE : ICONS.DELETE,
     },
   };
 

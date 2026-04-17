@@ -15,11 +15,14 @@ import {
   VehicleSummary,
   Worker,
   WorkerPayload,
-  WorkerStatus,
+  Status,
 } from "@/types";
-import { VEHICLE_TYPE } from "../../constants";
-import { STATUS_COLORS, STATUS_STYLES, WORKER_STATUSES } from "./constants";
-
+import {
+  STATUS,
+  STATUS_COLORS,
+  STATUS_STYLES,
+  VEHICLE_TYPE,
+} from "@/app/(private)/constants";
 interface CompanyDataProps {
   form: WorkerPayload;
   isViewMode: boolean;
@@ -55,7 +58,11 @@ const CompanyData = ({
           getVehicles(token),
         ]);
         setClients(clientsResponse.data);
-        setVehicles(vehiclesResponse.data);
+        setVehicles(
+          vehiclesResponse.data.filter(
+            (vehicle) => vehicle.status === "Active",
+          ),
+        );
         loadedRef.current = true;
       } finally {
         setIsLoadingData(false);
@@ -66,10 +73,17 @@ const CompanyData = ({
   }, [isViewMode, token]);
 
   // En modo vista mostrar solo el actual, en modo edit todos los disponibles
+  const isWorkerInactive = form.status === "Inactive";
+
   const displayClients =
     isViewMode && worker?.client ? [worker.client] : clients;
   const displayVehicles =
-    isViewMode && worker?.current_vehicle ? [worker.current_vehicle] : vehicles;
+    worker?.current_vehicle &&
+    !vehicles.some(
+      (vehicle) => vehicle.vehicle_id === worker.current_vehicle?.vehicle_id,
+    )
+      ? [worker.current_vehicle, ...vehicles]
+      : vehicles;
 
   return (
     <Card>
@@ -87,10 +101,8 @@ const CompanyData = ({
           label="Status"
           disabled={isViewMode}
           valueSelect={form.status}
-          onValueChange={(value) =>
-            updateField("status", value as WorkerStatus)
-          }
-          options={WORKER_STATUSES}
+          onValueChange={(value) => updateField("status", value as Status)}
+          options={STATUS}
           triggerStyles={STATUS_STYLES}
           colors={STATUS_COLORS}
         />
@@ -107,7 +119,7 @@ const CompanyData = ({
           getColor={(vehicle: VehicleSummary) =>
             VEHICLE_TYPE[vehicle.vehicle_type].color
           }
-          disabled={isViewMode || isLoadingData}
+          disabled={isViewMode || isLoadingData || isWorkerInactive}
         />
         <SearchableSelect
           label="Current client"
@@ -122,7 +134,7 @@ const CompanyData = ({
             client.contact_email || "No email"
           }
           getColor={(client: ClientSummary) => client.badge_color}
-          disabled={isViewMode || isLoadingData}
+          disabled={isViewMode || isLoadingData || isWorkerInactive}
         />
         <CustomInput
           label="Contract Start"

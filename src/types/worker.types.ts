@@ -1,8 +1,6 @@
 import { ClientSummary } from "./client.types";
-import { Document, DocumentStatus, SecurityLevel } from "./generic.types";
+import { Document, Status } from "./generic.types";
 import { VehicleSummary } from "./vehicle.types";
-
-type WorkerStatus = "Active" | "Absence" | "Inactive";
 
 interface Worker {
   worker_id: number;
@@ -20,7 +18,7 @@ interface Worker {
   emergency_contact_phone?: string | null;
   contract_start_date?: string | null;
   contract_end_date?: string | null;
-  status: WorkerStatus;
+  status: Status;
   notes?: string | null;
   client_id?: number | null;
   current_vehicle_id?: number | null;
@@ -44,7 +42,7 @@ interface WorkerPayload {
   emergency_contact_phone?: string;
   contract_start_date?: string;
   contract_end_date?: string;
-  status: WorkerStatus;
+  status: Status;
   notes?: string;
   client_id?: number | null;
   current_vehicle_id?: number | null;
@@ -61,10 +59,4 @@ interface DocumentUploadPayload {
   file: File;
 }
 
-export type {
-  WorkerStatus,
-  WorkerDocument,
-  Worker,
-  WorkerPayload,
-  DocumentUploadPayload,
-};
+export type { WorkerDocument, Worker, WorkerPayload, DocumentUploadPayload };

@@ -11,6 +11,8 @@ const LOCAL_API_URL = "http://localhost:4000/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || LOCAL_API_URL;
 
+const API_BASE_URL = API_URL.replace(/\/api$/, "");
+
 const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
@@ -48,6 +50,7 @@ const getAuthHeaders = (token: string) => ({
 export {
   METHODS,
   API_URL,
+  API_BASE_URL,
   apiClient,
   apiRequest,
   getApiErrorMessage,

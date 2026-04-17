@@ -7,15 +7,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CustomButton } from "@/components";
-import type { Worker, WorkerDocument, WorkerPayload } from "@/types";
+import type {
+  Worker,
+  DialogMode,
+  WorkerDocument,
+  WorkerPayload,
+} from "@/types";
 import { PREDEFINED_DOCUMENTS, EMPTY_DOCUMENT } from "../../constants";
-import { WorkerDialogMode } from "../../types";
 import { PersonalData } from "./personal-data";
 import { CompanyData } from "./company-data";
 import { DocumentsData } from "./documents-data";
-
-const normalizeDate = (value?: string | null) =>
-  value ? value.slice(0, 10) : "";
+import { getDialogTitle, normalizeDate } from "@/app/(private)/utils";
 
 const normalizeWorkerDocuments = (documents: WorkerDocument[]) => {
   const predefined = PREDEFINED_DOCUMENTS.map((definition) => {
@@ -92,7 +94,7 @@ export const WorkerDialog = ({
   onSubmit,
 }: {
   open: boolean;
-  mode: WorkerDialogMode;
+  mode: DialogMode;
   worker: Worker | null;
   form: WorkerPayload;
   setForm: React.Dispatch<React.SetStateAction<WorkerPayload>>;
@@ -115,19 +117,12 @@ export const WorkerDialog = ({
     value: WorkerPayload[K],
   ) => setForm((current) => ({ ...current, [field]: value }));
 
-  const getDialogTitle = () => {
-    if (mode === "create") return "Create worker";
-    if (mode === "edit") return "Edit worker";
-    if (mode === "view") return "View worker";
-    return "";
-  };
-
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
       <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-6xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold">
-            {getDialogTitle()}
+            {getDialogTitle(mode)}
           </DialogTitle>
         </DialogHeader>
 

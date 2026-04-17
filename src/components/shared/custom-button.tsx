@@ -5,6 +5,7 @@ import {
   Plus,
   Trash2,
   Upload,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import type { VariantProps } from "class-variance-authority";
@@ -18,6 +19,7 @@ const ICONS = {
   DOWNLOAD: <Download className="mr-2 h-4 w-4" />,
   FILE: <Paperclip className="mr-2 h-4 w-4" />,
   UPLOAD: <Upload className="mr-2 h-4 w-4" />,
+  RESTORE: <RotateCcw className="h-4 w-4 text-emerald-600" />,
 };
 
 const CustomButton = ({

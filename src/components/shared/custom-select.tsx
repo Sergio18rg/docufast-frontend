@@ -39,7 +39,7 @@ const CustomSelect = ({
           {options.map((option) => {
             return (
               <SelectItem key={option} value={option}>
-                <span className={colors[option] || colors.Default}>
+                <span className={colors[option] || "text-slate-700"}>
                   {option}
                 </span>
               </SelectItem>
