@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LoginForm } from "@/components";
 import { useAuth } from "@/hooks";
 import { getDefaultRouteByRole } from "@/lib/utils";
+import { LoginForm } from "./components/login-form";
 
 const LoginPage = () => {
   const router = useRouter();

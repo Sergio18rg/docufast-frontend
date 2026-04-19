@@ -4,6 +4,7 @@ interface AuthUser {
   user_id: number;
   email: string;
   role: Role;
+  must_change_password?: boolean;
 }
 
 interface LoginUser {
@@ -11,6 +12,7 @@ interface LoginUser {
   email: string;
   full_name: string;
   status: string;
+  must_change_password: boolean;
   role: {
     role_id: number;
     name: Role;
@@ -32,4 +34,19 @@ interface ProfileResponse {
   data: AuthUser;
 }
 
-export type { AuthUser, LoginUser, LoginResponse, ProfileResponse };
+interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+  data: {
+    token: string;
+    user: LoginUser;
+  };
+}
+
+export type {
+  AuthUser,
+  LoginUser,
+  LoginResponse,
+  ProfileResponse,
+  ChangePasswordResponse,
+};

@@ -8,8 +8,6 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { Button } from "../ui/button";
-import type { VariantProps } from "class-variance-authority";
-import type { buttonVariants } from "../ui/button";
 
 const ICONS = {
   NONE: null,
@@ -23,24 +21,26 @@ const ICONS = {
 };
 
 const CustomButton = ({
-  onClick,
   text = "",
   icon = null,
   disabled = false,
   variant = "default",
   size = "default",
+  type = "button",
   children,
+  ...props
 }: {
-  onClick?: () => void;
   text?: string;
   icon?: React.ReactNode;
-  disabled?: boolean;
-  variant?: VariantProps<typeof buttonVariants>["variant"];
-  size?: VariantProps<typeof buttonVariants>["size"];
-  children?: React.ReactNode;
-}) => {
+} & React.ComponentProps<typeof Button>) => {
   return (
-    <Button onClick={onClick} disabled={disabled} variant={variant} size={size}>
+    <Button
+      disabled={disabled}
+      variant={variant}
+      size={size}
+      type={type}
+      {...props}
+    >
       {icon}
       {text}
       {children}
