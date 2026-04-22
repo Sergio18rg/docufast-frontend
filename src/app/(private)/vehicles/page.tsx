@@ -24,12 +24,11 @@ import { EMPTY_FORM, PREDEFINED_DOCUMENTS, TABLE } from "./constants";
 import { companyBadgeStyle } from "./utils";
 import { VehicleDialog, buildPayload, mapVehicleToForm } from "./components";
 import { DIALOG_MODES, DOCUMENT_STATUS } from "../constants";
-import { getDocumentVisual, vehicleBadgeStyle } from "../utils";
-
-const getDocumentByKey = (
-  key: string,
-  documents: VehicleSummary["documents"] = [],
-) => documents?.find((document) => document.document_key === key);
+import {
+  getDocumentByKey,
+  getDocumentVisual,
+  vehicleBadgeStyle,
+} from "../utils";
 
 const VehiclesPage = () => {
   const { token } = useAuth();
@@ -79,6 +78,7 @@ const VehiclesPage = () => {
     setPendingFiles({});
     setDialogOpen(true);
   };
+
   const openEditDialog = (vehicle: VehicleSummary) => {
     setDialogMode(DIALOG_MODES.EDIT);
     setSelectedVehicle(vehicle);
@@ -93,6 +93,7 @@ const VehiclesPage = () => {
     setPendingFiles({});
     setDialogOpen(true);
   };
+
   const closeDialog = () => {
     setDialogOpen(false);
     setSelectedVehicle(null);
@@ -219,8 +220,8 @@ const VehiclesPage = () => {
         getProps: (vehicle: VehicleSummary) => ({
           documents: PREDEFINED_DOCUMENTS.map((definition) => {
             const document = getDocumentByKey(
-              definition.key,
               vehicle.documents,
+              definition.key,
             ) ?? { status: DOCUMENT_STATUS.NOT_UPLOADED };
             const visual = getDocumentVisual(document.status);
             return {

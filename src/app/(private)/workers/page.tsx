@@ -14,15 +14,16 @@ import {
 } from "@/services";
 import type { Worker, DialogMode, WorkerPayload } from "@/types";
 import { PREDEFINED_DOCUMENTS, EMPTY_FORM, TABLE } from "./constants";
-import { clientBadgeStyle } from "./utils";
 import { CustomButton, ICONS } from "@/components/shared/custom-button";
 import { SearchBar } from "@/components/shared/search-bar";
 import { CustomTable, Title, ToggleButton } from "@/components";
 import { DIALOG_MODES, DOCUMENT_STATUS } from "../constants";
-import { getDocumentVisual, vehicleBadgeStyle } from "../utils";
-
-const getDocumentByKey = (documents: Worker["documents"], key: string) =>
-  documents.find((document) => document.document_key === key);
+import {
+  clientBadgeStyle,
+  getDocumentByKey,
+  getDocumentVisual,
+  vehicleBadgeStyle,
+} from "../utils";
 
 const WorkersPage = () => {
   const { token } = useAuth();

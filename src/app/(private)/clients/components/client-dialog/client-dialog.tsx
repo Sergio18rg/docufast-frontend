@@ -1,10 +1,5 @@
 "use client";
-
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   Card,
   CardContent,
   CardHeader,
@@ -12,44 +7,41 @@ import {
   CustomButton,
   CustomInput,
   CustomSelect,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Label,
 } from "@/components";
-import type {
-  VehiclePayload,
-  VehicleSummary,
-  DialogMode,
-  Status,
-} from "@/types";
-import {
-  COMPANY_OWNER,
-  EMPTY_DOCUMENT,
-  PREDEFINED_DOCUMENTS,
-} from "../../constants";
 import {
   DIALOG_MODES,
   STATUS,
   STATUS_COLORS,
   STATUS_STYLES,
-  VEHICLE_TYPE,
 } from "@/app/(private)/constants";
-import { DocumentsData } from "./documents-data";
 import { getDialogTitle, normalizeDate } from "@/app/(private)/utils";
+import type { ClientPayload, ClientSummary, DialogMode, Status } from "@/types";
+import { EMPTY_DOCUMENT, PREDEFINED_DOCUMENTS } from "../../constants";
+import { DocumentsData } from "./documents-data";
 import DisplayWorkers from "@/app/(private)/components/display-workers";
 
-export const mapVehicleToForm = (vehicle: VehicleSummary): VehiclePayload => ({
-  license_plate: vehicle.license_plate,
-  company_owner: vehicle.company_owner,
-  vehicle_type: vehicle.vehicle_type,
-  contract_start_date: normalizeDate(vehicle.contract_start_date),
-  contract_end_date: normalizeDate(vehicle.contract_end_date),
-  status: vehicle.status,
-  notes: vehicle.notes ?? "",
+export const mapClientToForm = (client: ClientSummary): ClientPayload => ({
+  client_code: client.client_code,
+  business_name: client.business_name,
+  contact_email: client.contact_email || "",
+  contact_phone: client.contact_phone || "",
+  badge_color: client.badge_color,
+  contract_start_date: normalizeDate(client.contract_start_date),
+  contract_end_date: normalizeDate(client.contract_end_date),
+  status: client.status,
+  notes: client.notes ?? "",
   documents: [
     ...PREDEFINED_DOCUMENTS.map(
       (definition) =>
-        vehicle.documents?.find((d) => d.document_key === definition.key) ??
+        client.documents?.find((d) => d.document_key === definition.key) ??
         EMPTY_DOCUMENT(definition),
     ),
-    ...(vehicle.documents
+    ...(client.documents
       ?.filter(
         (d) => !PREDEFINED_DOCUMENTS.some((p) => p.key === d.document_key),
       )
@@ -61,7 +53,7 @@ export const mapVehicleToForm = (vehicle: VehicleSummary): VehiclePayload => ({
   ],
 });
 
-export const buildPayload = (form: VehiclePayload): VehiclePayload => ({
+export const buildPayload = (form: ClientPayload): ClientPayload => ({
   ...form,
   documents: form.documents.map((document) => ({
     ...document,
@@ -71,10 +63,10 @@ export const buildPayload = (form: VehiclePayload): VehiclePayload => ({
   })),
 });
 
-const VehicleDialog = ({
+const ClientDialog = ({
   open,
   mode,
-  vehicle,
+  client,
   form,
   setForm,
   pendingFiles,
@@ -85,9 +77,9 @@ const VehicleDialog = ({
 }: {
   open: boolean;
   mode: DialogMode;
-  vehicle: VehicleSummary | null;
-  form: VehiclePayload;
-  setForm: React.Dispatch<React.SetStateAction<VehiclePayload>>;
+  client: ClientSummary | null;
+  form: ClientPayload;
+  setForm: React.Dispatch<React.SetStateAction<ClientPayload>>;
   pendingFiles: Record<string, File | null>;
   setPendingFiles: React.Dispatch<
     React.SetStateAction<Record<string, File | null>>
@@ -97,35 +89,70 @@ const VehicleDialog = ({
   onSubmit: () => Promise<void> | void;
 }) => {
   const isViewMode = mode === DIALOG_MODES.VIEW;
-  const updateField = <K extends keyof VehiclePayload>(
+  const updateField = <K extends keyof ClientPayload>(
     field: K,
-    value: VehiclePayload[K],
+    value: ClientPayload[K],
   ) => setForm((current) => ({ ...current, [field]: value }));
-  const companyOptions = Object.keys(COMPANY_OWNER);
-  const typeOptions = Object.keys(VEHICLE_TYPE);
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold">
-            {getDialogTitle(mode, "Vehicle")}
+            {getDialogTitle(mode, "Client")}
           </DialogTitle>
         </DialogHeader>
+
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Vehicle data</CardTitle>
+              <CardTitle className="text-xl">Client data</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 xl:grid-cols-2">
               <CustomInput
-                label="Plate"
+                label="ID"
                 disabled={isViewMode}
-                value={form.license_plate}
+                value={form.client_code}
                 onChange={(e) =>
-                  updateField("license_plate", e.target.value.toUpperCase())
+                  updateField("client_code", e.target.value.toUpperCase())
                 }
               />
+              <CustomInput
+                label="Name"
+                disabled={isViewMode}
+                value={form.business_name}
+                onChange={(e) => updateField("business_name", e.target.value)}
+              />
+              <CustomInput
+                label="Email"
+                disabled={isViewMode}
+                value={form.contact_email}
+                onChange={(e) => updateField("contact_email", e.target.value)}
+              />
+              <CustomInput
+                label="Phone"
+                disabled={isViewMode}
+                value={form.contact_phone || ""}
+                onChange={(e) => updateField("contact_phone", e.target.value)}
+              />
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Corporate color</Label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    disabled={isViewMode}
+                    value={form.badge_color}
+                    onChange={(e) => updateField("badge_color", e.target.value)}
+                    className="h-10 w-14 rounded-md border bg-transparent"
+                  />
+                  <CustomInput
+                    label=""
+                    disabled
+                    value={form.badge_color}
+                    wrapperStyle="flex-1 space-y-0"
+                  />
+                </div>
+              </div>
               <CustomSelect
                 label="Status"
                 disabled={isViewMode}
@@ -134,38 +161,6 @@ const VehicleDialog = ({
                 options={STATUS}
                 triggerStyles={STATUS_STYLES}
                 colors={STATUS_COLORS}
-              />
-              <CustomSelect
-                label="Vehicle type"
-                disabled={isViewMode}
-                valueSelect={form.vehicle_type}
-                onValueChange={(v) =>
-                  updateField("vehicle_type", v as keyof typeof VEHICLE_TYPE)
-                }
-                options={typeOptions}
-                triggerStyles={{ Dry: "", Reefer: "", Truck: "", Other: "" }}
-                colors={{
-                  Dry: "text-slate-700",
-                  Reefer: "text-slate-700",
-                  Truck: "text-slate-700",
-                  Other: "text-slate-700",
-                  Default: "text-slate-700",
-                }}
-              />
-              <CustomSelect
-                label="Company owner"
-                disabled={isViewMode}
-                valueSelect={form.company_owner}
-                onValueChange={(v) =>
-                  updateField("company_owner", v as keyof typeof COMPANY_OWNER)
-                }
-                options={companyOptions}
-                triggerStyles={Object.fromEntries(
-                  companyOptions.map((key) => [key, ""]),
-                )}
-                colors={Object.fromEntries(
-                  companyOptions.map((key) => [key, "text-slate-700"]),
-                )}
               />
               <CustomInput
                 label="Contract start"
@@ -195,7 +190,7 @@ const VehicleDialog = ({
             </CardContent>
           </Card>
 
-          <DisplayWorkers workers={vehicle?.current_workers} />
+          <DisplayWorkers workers={client?.current_workers} />
 
           <DocumentsData
             form={form}
@@ -203,7 +198,7 @@ const VehicleDialog = ({
             setForm={setForm}
             pendingFiles={pendingFiles}
             setPendingFiles={setPendingFiles}
-            vehicle={vehicle}
+            client={client}
           />
 
           <div className="flex justify-end gap-3">
@@ -218,7 +213,7 @@ const VehicleDialog = ({
                   isSaving
                     ? "Saving..."
                     : mode === DIALOG_MODES.CREATE
-                      ? "Create vehicle"
+                      ? "Create client"
                       : "Save changes"
                 }
                 onClick={() => void onSubmit()}
@@ -232,4 +227,4 @@ const VehicleDialog = ({
   );
 };
 
-export { VehicleDialog };
+export { ClientDialog };

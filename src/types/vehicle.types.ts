@@ -1,14 +1,7 @@
-import { Document } from "./generic.types";
+import { Document, WorkerSummary } from "./generic.types";
 
 type VehicleType = "Dry" | "Reefer" | "Truck" | "Other";
 type VehicleStatus = "Active" | "Absence" | "Inactive";
-
-interface VehicleWorkerSummary {
-  worker_id: number;
-  first_name: string;
-  last_name_1: string;
-  full_name: string;
-}
 
 interface VehicleDocument extends Document {
   vehicle_document_id?: number | null;
@@ -23,7 +16,7 @@ interface VehicleSummary {
   contract_end_date?: string | null;
   status: VehicleStatus;
   notes?: string | null;
-  current_workers?: VehicleWorkerSummary[];
+  current_workers?: WorkerSummary[];
   documents?: VehicleDocument[];
 }
 
@@ -41,7 +34,6 @@ interface VehiclePayload {
 export type {
   VehicleType,
   VehicleStatus,
-  VehicleWorkerSummary,
   VehicleDocument,
   VehicleSummary,
   VehiclePayload,

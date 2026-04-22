@@ -27,6 +27,12 @@ interface Document {
   expiration_date?: string | null;
   notes?: string | null;
 }
+interface WorkerSummary {
+  worker_id: number;
+  first_name: string;
+  last_name_1: string;
+  full_name: string;
+}
 
 export type {
   PredefinedDocument,
@@ -35,4 +41,5 @@ export type {
   SecurityLevel,
   DialogMode,
   Status,
+  WorkerSummary,
 };

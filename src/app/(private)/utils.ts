@@ -79,6 +79,20 @@ const normalizeDate = (value?: string | null) =>
 
 const isImage = (mimeType?: string | null) => mimeType?.startsWith("image/");
 
+const clientBadgeStyle = (color = "#94a3b8") => {
+  return {
+    backgroundColor: `${color}22`,
+    borderColor: color,
+    color: color,
+  };
+};
+
+const getDocumentByKey = <T extends { document_key: string }>(
+  documents: T[] | undefined,
+  key: string,
+): T | undefined =>
+  documents?.find((document) => document.document_key === key);
+
 export {
   getDocumentVisual,
   vehicleBadgeStyle,
@@ -86,4 +100,6 @@ export {
   getDialogTitle,
   normalizeDate,
   isImage,
+  clientBadgeStyle,
+  getDocumentByKey,
 };
