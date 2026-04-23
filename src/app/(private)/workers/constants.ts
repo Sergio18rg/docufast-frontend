@@ -52,6 +52,19 @@ const TABLE = {
     "Documents",
     "Actions",
   ],
+  CLIENT_HEADERS: [
+    "Name",
+    "Identity document",
+    "Vehicle ID",
+    "Vehicle type",
+    "Documents",
+  ],
+  DESCRIPTIONS: {
+    ADMIN:
+      "Workers management with documents, vehicle allocation and client assignment.",
+    EXTERNAL:
+      "Assigned workers overview with shared documentation visible to your organization.",
+  },
 };
 
 export { PREDEFINED_DOCUMENTS, EMPTY_FORM, TABLE, EMPTY_DOCUMENT };

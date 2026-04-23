@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { buildPayload, mapWorkerToForm, WorkerDialog } from "./components";
+import {
+  buildPayload,
+  ExternalWorkerDialog,
+  mapWorkerToForm,
+  WorkerDialog,
+} from "./components";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks";
 import {
@@ -13,20 +18,16 @@ import {
   uploadWorkerDocument,
 } from "@/services";
 import type { Worker, DialogMode, WorkerPayload } from "@/types";
-import { PREDEFINED_DOCUMENTS, EMPTY_FORM, TABLE } from "./constants";
+import { EMPTY_FORM, TABLE } from "./constants";
 import { CustomButton, ICONS } from "@/components/shared/custom-button";
 import { SearchBar } from "@/components/shared/search-bar";
 import { CustomTable, Title, ToggleButton } from "@/components";
-import { DIALOG_MODES, DOCUMENT_STATUS } from "../constants";
-import {
-  clientBadgeStyle,
-  getDocumentByKey,
-  getDocumentVisual,
-  vehicleBadgeStyle,
-} from "../utils";
+import { DIALOG_MODES } from "../constants";
+import { ROLES } from "@/constants";
+import { useTableRows } from "./hooks";
 
 const WorkersPage = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,6 +42,7 @@ const WorkersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showActive, setShowActive] = useState(true);
   const fetchedTokenRef = useRef<string | null>(null);
+  const isExternalUser = user?.role === ROLES.EXTERNAL;
 
   const loadWorkers = async (currentToken = token) => {
     if (!currentToken) return;
@@ -85,7 +87,9 @@ const WorkersPage = () => {
   const openViewDialog = (worker: Worker) => {
     setDialogMode(DIALOG_MODES.VIEW);
     setSelectedWorker(worker);
-    setForm(mapWorkerToForm(worker));
+    if (!isExternalUser) {
+      setForm(mapWorkerToForm(worker));
+    }
     setPendingFiles({});
     setDialogOpen(true);
   };
@@ -167,126 +171,70 @@ const WorkersPage = () => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
     return workers.filter((worker) => {
-      const matchesStatus = showActive
+      const matchesStatus = isExternalUser
         ? worker.status === "Active"
-        : worker.status === "Inactive";
+        : showActive
+          ? worker.status === "Active"
+          : worker.status === "Inactive";
       if (!matchesStatus) return false;
       if (!normalizedSearch) return true;
 
       const fullName =
         `${worker.first_name} ${worker.last_name_1} ${worker.last_name_2 ?? ""}`.toLowerCase();
       const documentNumber = (worker.document_number ?? "").toLowerCase();
-      const companyCode = worker.company_worker_code.toLowerCase();
+      const companyCode = (worker.company_worker_code ?? "").toLowerCase();
+      const vehiclePlate = (
+        worker.current_vehicle?.license_plate ?? ""
+      ).toLowerCase();
 
-      return (
-        fullName.includes(normalizedSearch) ||
-        documentNumber.includes(normalizedSearch) ||
-        companyCode.includes(normalizedSearch)
-      );
+      return isExternalUser
+        ? fullName.includes(normalizedSearch) ||
+            documentNumber.includes(normalizedSearch) ||
+            vehiclePlate.includes(normalizedSearch)
+        : fullName.includes(normalizedSearch) ||
+            documentNumber.includes(normalizedSearch) ||
+            companyCode.includes(normalizedSearch);
     });
-  }, [workers, searchTerm, showActive]);
+  }, [workers, searchTerm, showActive, isExternalUser]);
 
-  const TABLE_ROWS = {
-    ID: "worker_id",
-    ROW_ACTION: (worker: Worker) => openViewDialog(worker),
-    COLUMN_DEFINITION: [
-      {
-        key: "first_name",
-        getProps: (worker: Worker) => ({
-          primaryText: `${worker.first_name} ${worker.last_name_1}`,
-          helperText: worker.email || "No email",
-        }),
-      },
-      {
-        key: "document_number",
-        getProps: (worker: Worker) => ({
-          primaryText: worker.document_number,
-        }),
-      },
-      {
-        key: "company_worker_code",
-        getProps: (worker: Worker) => ({
-          primaryText: worker.company_worker_code,
-        }),
-      },
-      {
-        key: "business_name",
-        render: "BadgeCell",
-        getProps: (worker: Worker) => ({
-          text: worker.client?.business_name,
-          style: worker.client
-            ? clientBadgeStyle(worker.client.badge_color)
-            : undefined,
-        }),
-      },
-      {
-        key: "license_plate",
-        getProps: (worker: Worker) => ({
-          primaryText: worker.current_vehicle?.license_plate,
-        }),
-      },
-      {
-        key: "vehicle_type",
-        render: "BadgeCell",
-        getProps: (worker: Worker) => ({
-          text: worker.current_vehicle?.vehicle_type,
-          style: worker.current_vehicle
-            ? vehicleBadgeStyle(worker.current_vehicle.vehicle_type)
-            : undefined,
-        }),
-      },
-      {
-        key: "documents",
-        render: "DocumentsCell",
-        getProps: (worker: Worker) => ({
-          documents: PREDEFINED_DOCUMENTS.map((definition) => {
-            const document = getDocumentByKey(
-              worker.documents,
-              definition.key,
-            ) ?? {
-              status: DOCUMENT_STATUS.NOT_UPLOADED,
-            };
-            const visual = getDocumentVisual(document.status);
-            return {
-              key: definition.key,
-              label: definition.shortLabel,
-              icon: visual.icon,
-              color: visual.color,
-            };
-          }),
-        }),
-      },
-    ],
-    ACTIONS: {
-      onEdit: (worker: Worker) => openEditDialog(worker),
-      onDelete: (worker: Worker) =>
-        worker.status === "Inactive"
-          ? handleRestore(worker)
-          : handleDelete(worker),
-      getDeleteIcon: (worker: Worker) =>
-        worker.status === "Inactive" ? ICONS.RESTORE : ICONS.DELETE,
-    },
-  };
+  const { EXTERNAL_TABLE_ROWS, TABLE_ROWS } = useTableRows({
+    openViewDialog,
+    openEditDialog,
+    handleRestore,
+    handleDelete,
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <Title
           title="Workers"
-          description="Workers management with company data and controlled documentation."
+          description={
+            isExternalUser
+              ? TABLE.DESCRIPTIONS.EXTERNAL
+              : TABLE.DESCRIPTIONS.ADMIN
+          }
         />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <SearchBar
-            placeholder="Search by name, identity document or company ID"
+            placeholder={
+              isExternalUser
+                ? "Search by name, identity document or vehicle ID"
+                : "Search by name, identity document or company ID"
+            }
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
           />
-          <ToggleButton enabled={showActive} setEnabled={setShowActive} />
-          <CustomButton
-            text="Add Worker"
-            icon={ICONS.ADD}
-            onClick={openCreateDialog}
-          />
+          {!isExternalUser && (
+            <>
+              <ToggleButton enabled={showActive} setEnabled={setShowActive} />
+              <CustomButton
+                text="Add Worker"
+                icon={ICONS.ADD}
+                onClick={openCreateDialog}
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -299,26 +247,37 @@ const WorkersPage = () => {
       <Card>
         <CardContent className="pt-6">
           <CustomTable
-            headers={TABLE.HEADERS}
+            headers={isExternalUser ? TABLE.CLIENT_HEADERS : TABLE.HEADERS}
             tableData={filteredWorkers}
             isLoading={isLoading}
-            tableRows={TABLE_ROWS}
+            tableRows={isExternalUser ? EXTERNAL_TABLE_ROWS : TABLE_ROWS}
+            colSpan={
+              (isExternalUser ? TABLE.CLIENT_HEADERS : TABLE.HEADERS).length
+            }
           />
         </CardContent>
       </Card>
 
-      <WorkerDialog
-        open={dialogOpen}
-        mode={dialogMode}
-        worker={selectedWorker}
-        form={form}
-        setForm={setForm}
-        pendingFiles={pendingFiles}
-        setPendingFiles={setPendingFiles}
-        isSaving={isSaving}
-        onClose={closeDialog}
-        onSubmit={handleSubmit}
-      />
+      {isExternalUser ? (
+        <ExternalWorkerDialog
+          open={dialogOpen}
+          worker={selectedWorker}
+          onClose={closeDialog}
+        />
+      ) : (
+        <WorkerDialog
+          open={dialogOpen}
+          mode={dialogMode}
+          worker={selectedWorker}
+          form={form}
+          setForm={setForm}
+          pendingFiles={pendingFiles}
+          setPendingFiles={setPendingFiles}
+          isSaving={isSaving}
+          onClose={closeDialog}
+          onSubmit={handleSubmit}
+        />
+      )}
     </div>
   );
 };
