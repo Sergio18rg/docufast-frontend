@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/hooks";
 
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/components";
 
 import { ROUTES } from "@/constants";
+import { API_BASE_URL } from "@/services";
 
 import { User, Users, Truck, Building, BarChart, LogOut } from "lucide-react";
 
@@ -104,7 +106,24 @@ export const AppSidebar = () => {
       <SidebarFooter>
         <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-slate-300" />
+            {user.photo_url ? (
+              <Image
+                src={`${API_BASE_URL}${user.photo_url}`}
+                alt="Profile"
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div
+                className="h-8 w-8 rounded-full bg-slate-300"
+                style={
+                  user.role === "External" && user.badge_color
+                    ? { backgroundColor: user.badge_color }
+                    : undefined
+                }
+              />
+            )}
 
             <div className="text-sm">
               <p className="font-medium">{user.user_id}</p>
