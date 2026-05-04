@@ -26,14 +26,19 @@ import {
 } from "../../constants";
 import {
   DIALOG_MODES,
-  STATUS,
+  STATUSES,
   STATUS_COLORS,
   STATUS_STYLES,
   VEHICLE_TYPE,
 } from "@/app/(private)/constants";
 import { DocumentsData } from "./documents-data";
-import { getDialogTitle, normalizeDate } from "@/app/(private)/utils";
+import {
+  getDialogTitle,
+  normalizeDate,
+  getHighlightedFieldClassName,
+} from "@/app/(private)/utils";
 import DisplayWorkers from "@/app/(private)/components/display-workers";
+import { useExtractDataFromDocuments } from "@/hooks";
 
 export const mapVehicleToForm = (vehicle: VehicleSummary): VehiclePayload => ({
   license_plate: vehicle.license_plate,
@@ -97,6 +102,15 @@ const VehicleDialog = ({
   onSubmit: () => Promise<void> | void;
 }) => {
   const isViewMode = mode === DIALOG_MODES.VIEW;
+  const { isExtractingData, highlightedFields, handleLoadDataFromDocuments } =
+    useExtractDataFromDocuments({
+      open,
+      entityType: "Vehicle",
+      form,
+      pendingFiles,
+      setForm,
+    });
+
   const updateField = <K extends keyof VehiclePayload>(
     field: K,
     value: VehiclePayload[K],
@@ -121,6 +135,10 @@ const VehicleDialog = ({
               <CustomInput
                 label="Plate"
                 disabled={isViewMode}
+                className={getHighlightedFieldClassName(
+                  highlightedFields,
+                  "license_plate",
+                )}
                 value={form.license_plate}
                 onChange={(e) =>
                   updateField("license_plate", e.target.value.toUpperCase())
@@ -131,7 +149,7 @@ const VehicleDialog = ({
                 disabled={isViewMode}
                 valueSelect={form.status}
                 onValueChange={(v) => updateField("status", v as Status)}
-                options={STATUS}
+                options={STATUSES}
                 triggerStyles={STATUS_STYLES}
                 colors={STATUS_COLORS}
               />
@@ -171,6 +189,10 @@ const VehicleDialog = ({
                 label="Contract start"
                 type="date"
                 disabled={isViewMode}
+                className={getHighlightedFieldClassName(
+                  highlightedFields,
+                  "contract_start_date",
+                )}
                 value={form.contract_start_date || ""}
                 onChange={(e) =>
                   updateField("contract_start_date", e.target.value)
@@ -180,6 +202,10 @@ const VehicleDialog = ({
                 label="Contract end"
                 type="date"
                 disabled={isViewMode}
+                className={getHighlightedFieldClassName(
+                  highlightedFields,
+                  "contract_end_date",
+                )}
                 value={form.contract_end_date || ""}
                 onChange={(e) =>
                   updateField("contract_end_date", e.target.value)
@@ -204,6 +230,9 @@ const VehicleDialog = ({
             pendingFiles={pendingFiles}
             setPendingFiles={setPendingFiles}
             vehicle={vehicle}
+            highlightedFields={highlightedFields}
+            isExtractingData={isExtractingData}
+            onLoadDataFromDocuments={() => void handleLoadDataFromDocuments()}
           />
 
           <div className="flex justify-end gap-3">

@@ -22,7 +22,7 @@ import { EMPTY_FORM, TABLE } from "./constants";
 import { CustomButton, ICONS } from "@/components/shared/custom-button";
 import { SearchBar } from "@/components/shared/search-bar";
 import { CustomTable, Title, ToggleButton } from "@/components";
-import { DIALOG_MODES } from "../constants";
+import { DIALOG_MODES, STATUS } from "../constants";
 import { ROLES } from "@/constants";
 import { useTableRows } from "./hooks";
 
@@ -172,10 +172,10 @@ const WorkersPage = () => {
 
     return workers.filter((worker) => {
       const matchesStatus = isExternalUser
-        ? worker.status === "Active"
+        ? worker.status === STATUS.ACTIVE
         : showActive
-          ? worker.status === "Active"
-          : worker.status === "Inactive";
+          ? worker.status === STATUS.ACTIVE
+          : worker.status === STATUS.INACTIVE;
       if (!matchesStatus) return false;
       if (!normalizedSearch) return true;
 

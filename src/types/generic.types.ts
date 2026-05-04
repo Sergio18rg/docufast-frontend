@@ -34,6 +34,10 @@ interface WorkerSummary {
   full_name: string;
 }
 
+type EntityType = "Worker" | "Vehicle" | "Client";
+
+type HighlightedFieldMap = Record<string, boolean>;
+
 export type {
   PredefinedDocument,
   Document,
@@ -42,4 +46,6 @@ export type {
   DialogMode,
   Status,
   WorkerSummary,
+  HighlightedFieldMap,
+  EntityType,
 };

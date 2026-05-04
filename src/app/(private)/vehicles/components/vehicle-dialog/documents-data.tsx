@@ -25,7 +25,11 @@ import {
 import { mapVehicleToForm } from "./vehicle-dialog";
 import { API_BASE_URL } from "@/services";
 import { DocumentLoader } from "@/components/shared/document-loader";
-import { getDocumentVisual, isImage } from "@/app/(private)/utils";
+import {
+  getDocumentVisual,
+  isImage,
+  getHighlightedFieldClassName,
+} from "@/app/(private)/utils";
 import {
   SECURITY_LEVEL_COLORS,
   SECURITY_LEVEL_STYLES,
@@ -39,6 +43,9 @@ const DocumentsData = ({
   pendingFiles,
   setPendingFiles,
   vehicle,
+  highlightedFields = {},
+  isExtractingData = false,
+  onLoadDataFromDocuments,
 }: {
   form: VehiclePayload;
   isViewMode: boolean;
@@ -48,6 +55,9 @@ const DocumentsData = ({
     React.SetStateAction<Record<string, File | null>>
   >;
   vehicle: VehicleSummary | null;
+  highlightedFields?: Record<string, boolean>;
+  isExtractingData?: boolean;
+  onLoadDataFromDocuments?: () => void;
 }) => {
   const { token } = useAuth();
 
@@ -125,11 +135,22 @@ const DocumentsData = ({
         <div className="flex items-center justify-between gap-4">
           <CardTitle className="text-xl">Documents</CardTitle>
           {!isViewMode && (
-            <CustomButton
-              text="Add additional document"
-              icon={ICONS.ADD}
-              onClick={handleAddAdditionalDocument}
-            />
+            <div className="flex items-center gap-2">
+              <CustomButton
+                text={
+                  isExtractingData ? "Loading..." : "Load data from documents"
+                }
+                variant="outline"
+                icon={ICONS.UPLOAD}
+                onClick={onLoadDataFromDocuments}
+                disabled={isExtractingData}
+              />
+              <CustomButton
+                text="Add additional document"
+                icon={ICONS.ADD}
+                onClick={handleAddAdditionalDocument}
+              />
+            </div>
           )}
         </div>
       </CardHeader>
@@ -182,13 +203,14 @@ const DocumentsData = ({
                     <CustomButton
                       variant="outline"
                       size="sm"
-                      icon={ICONS.DELETE}
+                      icon={ICONS.DOWNLOAD}
                       text={document.is_predefined ? "Remove file" : "Remove"}
                       onClick={() => void handleRemoveDocument(document)}
                     />
                   )}
                 </div>
               </div>
+
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <CustomInput
                   label="Type"
@@ -235,6 +257,10 @@ const DocumentsData = ({
                   label="Issue Date"
                   type="date"
                   disabled={isViewMode}
+                  className={getHighlightedFieldClassName(
+                    highlightedFields,
+                    `document:${document.document_key}:issue_date`,
+                  )}
                   value={document.issue_date || ""}
                   onChange={(e) =>
                     updateDocument(document.document_key, {
@@ -246,6 +272,10 @@ const DocumentsData = ({
                   label="Expiry Date"
                   type="date"
                   disabled={isViewMode}
+                  className={getHighlightedFieldClassName(
+                    highlightedFields,
+                    `document:${document.document_key}:expiration_date`,
+                  )}
                   value={document.expiration_date || ""}
                   onChange={(e) =>
                     updateDocument(document.document_key, {

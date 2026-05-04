@@ -1,7 +1,7 @@
 import type { Worker } from "@/types";
 import { ICONS } from "@/components/shared/custom-button";
 import { PREDEFINED_DOCUMENTS } from "../constants";
-import { DOCUMENT_STATUS } from "../../constants";
+import { DOCUMENT_STATUS, STATUS } from "../../constants";
 import {
   clientBadgeStyle,
   getDocumentByKey,
@@ -139,11 +139,11 @@ const useTableRows = ({
     ACTIONS: {
       onEdit: (worker: Worker) => openEditDialog(worker),
       onDelete: (worker: Worker) =>
-        worker.status === "Inactive"
+        worker.status === STATUS.INACTIVE
           ? handleRestore(worker)
           : handleDelete(worker),
       getDeleteIcon: (worker: Worker) =>
-        worker.status === "Inactive" ? ICONS.RESTORE : ICONS.DELETE,
+        worker.status === STATUS.INACTIVE ? ICONS.RESTORE : ICONS.DELETE,
     },
   };
 

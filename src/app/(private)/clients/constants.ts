@@ -1,3 +1,4 @@
+import { STATUS } from "../constants";
 import { createBaseDocument } from "../utils";
 import type {
   ClientDocument,
@@ -22,7 +23,7 @@ const EMPTY_FORM: ClientPayload = {
   badge_color: "#94a3b8",
   contract_start_date: "",
   contract_end_date: "",
-  status: "Active",
+  status: STATUS.ACTIVE,
   notes: "",
   documents: PREDEFINED_DOCUMENTS.map((d) => EMPTY_DOCUMENT(d)),
 };

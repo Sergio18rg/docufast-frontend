@@ -6,17 +6,24 @@ import {
   CustomInput,
 } from "@/components";
 import { WorkerPayload } from "@/types";
+import { getHighlightedFieldClassName } from "@/app/(private)/utils";
 
 interface PersonalDataProps {
   form: WorkerPayload;
   isViewMode: boolean;
+  highlightedFields?: Record<string, boolean>;
   updateField: (
     field: keyof WorkerPayload,
     value: WorkerPayload[keyof WorkerPayload],
   ) => void;
 }
 
-const PersonalData = ({ form, isViewMode, updateField }: PersonalDataProps) => {
+const PersonalData = ({
+  form,
+  isViewMode,
+  highlightedFields = {},
+  updateField,
+}: PersonalDataProps) => {
   return (
     <Card>
       <CardHeader>
@@ -26,30 +33,50 @@ const PersonalData = ({ form, isViewMode, updateField }: PersonalDataProps) => {
         <CustomInput
           label="First name"
           disabled={isViewMode}
+          className={getHighlightedFieldClassName(
+            highlightedFields,
+            "first_name",
+          )}
           value={form.first_name}
           onChange={(e) => updateField("first_name", e.target.value)}
         />
         <CustomInput
           label="First surname"
           disabled={isViewMode}
+          className={getHighlightedFieldClassName(
+            highlightedFields,
+            "last_name_1",
+          )}
           value={form.last_name_1}
           onChange={(e) => updateField("last_name_1", e.target.value)}
         />
         <CustomInput
           label="Second surname"
           disabled={isViewMode}
+          className={getHighlightedFieldClassName(
+            highlightedFields,
+            "last_name_2",
+          )}
           value={form.last_name_2}
           onChange={(e) => updateField("last_name_2", e.target.value)}
         />
         <CustomInput
           label="Identification document"
           disabled={isViewMode}
+          className={getHighlightedFieldClassName(
+            highlightedFields,
+            "document_number",
+          )}
           value={form.document_number}
           onChange={(e) => updateField("document_number", e.target.value)}
         />
         <CustomInput
           label="Social Security number"
           disabled={isViewMode}
+          className={getHighlightedFieldClassName(
+            highlightedFields,
+            "social_security_number",
+          )}
           value={form.social_security_number}
           onChange={(e) =>
             updateField("social_security_number", e.target.value)
@@ -59,12 +86,17 @@ const PersonalData = ({ form, isViewMode, updateField }: PersonalDataProps) => {
           label="Birthday"
           disabled={isViewMode}
           type="date"
+          className={getHighlightedFieldClassName(
+            highlightedFields,
+            "birth_date",
+          )}
           value={form.birth_date}
           onChange={(e) => updateField("birth_date", e.target.value)}
         />
         <CustomInput
           label="Address"
           disabled={isViewMode}
+          className={getHighlightedFieldClassName(highlightedFields, "address")}
           value={form.address}
           onChange={(e) => updateField("address", e.target.value)}
           wrapperStyle="space-y-2 md:col-span-2"

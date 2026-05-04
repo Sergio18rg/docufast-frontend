@@ -19,23 +19,28 @@ import {
 } from "@/types";
 import {
   STATUS,
+  STATUSES,
   STATUS_COLORS,
   STATUS_STYLES,
   VEHICLE_TYPE,
 } from "@/app/(private)/constants";
-interface CompanyDataProps {
+import { getHighlightedFieldClassName } from "@/app/(private)/utils";
+
+type CompanyDataProps = {
   form: WorkerPayload;
   isViewMode: boolean;
+  highlightedFields?: Record<string, boolean>;
   updateField: (
     field: keyof WorkerPayload,
     value: WorkerPayload[keyof WorkerPayload],
   ) => void;
   worker: Worker | null;
-}
+};
 
 const CompanyData = ({
   form,
   isViewMode,
+  highlightedFields = {},
   updateField,
   worker,
 }: CompanyDataProps) => {
@@ -60,7 +65,7 @@ const CompanyData = ({
         setClients(clientsResponse.data);
         setVehicles(
           vehiclesResponse.data.filter(
-            (vehicle) => vehicle.status === "Active",
+            (vehicle) => vehicle.status === STATUS.ACTIVE,
           ),
         );
         loadedRef.current = true;
@@ -72,8 +77,7 @@ const CompanyData = ({
     loadData();
   }, [isViewMode, token]);
 
-  // En modo vista mostrar solo el actual, en modo edit todos los disponibles
-  const isWorkerInactive = form.status === "Inactive";
+  const isWorkerInactive = form.status === STATUS.INACTIVE;
 
   const displayClients =
     isViewMode && worker?.client ? [worker.client] : clients;
@@ -102,7 +106,7 @@ const CompanyData = ({
           disabled={isViewMode}
           valueSelect={form.status}
           onValueChange={(value) => updateField("status", value as Status)}
-          options={STATUS}
+          options={STATUSES}
           triggerStyles={STATUS_STYLES}
           colors={STATUS_COLORS}
         />
@@ -140,6 +144,10 @@ const CompanyData = ({
           label="Contract Start"
           type="date"
           disabled={isViewMode}
+          className={getHighlightedFieldClassName(
+            highlightedFields,
+            "contract_start_date",
+          )}
           value={form.contract_start_date}
           onChange={(e) => updateField("contract_start_date", e.target.value)}
         />
@@ -147,6 +155,10 @@ const CompanyData = ({
           label="Contract End"
           type="date"
           disabled={isViewMode}
+          className={getHighlightedFieldClassName(
+            highlightedFields,
+            "contract_end_date",
+          )}
           value={form.contract_end_date}
           onChange={(e) => updateField("contract_end_date", e.target.value)}
         />

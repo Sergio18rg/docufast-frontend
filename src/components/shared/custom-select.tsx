@@ -15,6 +15,7 @@ const CustomSelect = ({
   triggerStyles,
   colors,
   options,
+  className,
 }: {
   label: string;
   options: string[];
@@ -23,6 +24,7 @@ const CustomSelect = ({
   onValueChange: (value: string) => void;
   triggerStyles: Record<string, string>;
   colors: Record<string, string>;
+  className?: string;
 }) => {
   return (
     <div className="space-y-2">
@@ -32,7 +34,9 @@ const CustomSelect = ({
         value={valueSelect}
         onValueChange={onValueChange}
       >
-        <SelectTrigger className={`w-full ${triggerStyles[valueSelect]}`}>
+        <SelectTrigger
+          className={`w-full ${triggerStyles[valueSelect]} ${className || ""}`}
+        >
           <SelectValue placeholder="Select status" />
         </SelectTrigger>
         <SelectContent>

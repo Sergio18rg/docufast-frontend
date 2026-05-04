@@ -28,7 +28,11 @@ import {
   SECURITY_LEVEL_STYLES,
   SECURITY_LEVELS,
 } from "@/app/(private)/constants";
-import { getDocumentVisual, isImage } from "@/app/(private)/utils";
+import {
+  getDocumentVisual,
+  isImage,
+  getHighlightedFieldClassName,
+} from "@/app/(private)/utils";
 import { EMPTY_DOCUMENT } from "../../constants";
 import { mapClientToForm } from "./client-dialog";
 
@@ -39,6 +43,9 @@ const DocumentsData = ({
   pendingFiles,
   setPendingFiles,
   client,
+  highlightedFields = {},
+  isExtractingData = false,
+  onLoadDataFromDocuments,
 }: {
   form: ClientPayload;
   isViewMode: boolean;
@@ -48,6 +55,9 @@ const DocumentsData = ({
     React.SetStateAction<Record<string, File | null>>
   >;
   client: ClientSummary | null;
+  highlightedFields?: Record<string, boolean>;
+  isExtractingData?: boolean;
+  onLoadDataFromDocuments?: () => void;
 }) => {
   const { token } = useAuth();
 
@@ -134,12 +144,23 @@ const DocumentsData = ({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl">Documents</CardTitle>
         {!isViewMode && (
-          <CustomButton
-            text="Add additional"
-            variant="outline"
-            icon={ICONS.ADD}
-            onClick={handleAddAdditionalDocument}
-          />
+          <div className="flex items-center gap-2">
+            <CustomButton
+              text={
+                isExtractingData ? "Loading..." : "Load data from documents"
+              }
+              variant="outline"
+              icon={ICONS.UPLOAD}
+              onClick={onLoadDataFromDocuments}
+              disabled={isExtractingData}
+            />
+            <CustomButton
+              text="Add additional"
+              variant="outline"
+              icon={ICONS.ADD}
+              onClick={handleAddAdditionalDocument}
+            />
+          </div>
         )}
       </CardHeader>
 
@@ -252,6 +273,10 @@ const DocumentsData = ({
                   label="Issue Date"
                   type="date"
                   disabled={isViewMode}
+                  className={getHighlightedFieldClassName(
+                    highlightedFields,
+                    `document:${document.document_key}:issue_date`,
+                  )}
                   value={document.issue_date || ""}
                   onChange={(e) =>
                     updateDocument(document.document_key, {
@@ -263,6 +288,10 @@ const DocumentsData = ({
                   label="Expiry Date"
                   type="date"
                   disabled={isViewMode}
+                  className={getHighlightedFieldClassName(
+                    highlightedFields,
+                    `document:${document.document_key}:expiration_date`,
+                  )}
                   value={document.expiration_date || ""}
                   onChange={(e) =>
                     updateDocument(document.document_key, {

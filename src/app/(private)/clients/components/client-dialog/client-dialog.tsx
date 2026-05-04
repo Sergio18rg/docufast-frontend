@@ -15,15 +15,20 @@ import {
 } from "@/components";
 import {
   DIALOG_MODES,
-  STATUS,
+  STATUSES,
   STATUS_COLORS,
   STATUS_STYLES,
 } from "@/app/(private)/constants";
-import { getDialogTitle, normalizeDate } from "@/app/(private)/utils";
+import {
+  getDialogTitle,
+  normalizeDate,
+  getHighlightedFieldClassName,
+} from "@/app/(private)/utils";
 import type { ClientPayload, ClientSummary, DialogMode, Status } from "@/types";
 import { EMPTY_DOCUMENT, PREDEFINED_DOCUMENTS } from "../../constants";
 import { DocumentsData } from "./documents-data";
 import DisplayWorkers from "@/app/(private)/components/display-workers";
+import { useExtractDataFromDocuments } from "@/hooks";
 
 export const mapClientToForm = (client: ClientSummary): ClientPayload => ({
   client_code: client.client_code,
@@ -89,6 +94,15 @@ const ClientDialog = ({
   onSubmit: () => Promise<void> | void;
 }) => {
   const isViewMode = mode === DIALOG_MODES.VIEW;
+  const { isExtractingData, highlightedFields, handleLoadDataFromDocuments } =
+    useExtractDataFromDocuments({
+      open,
+      entityType: "Client",
+      form,
+      pendingFiles,
+      setForm,
+    });
+
   const updateField = <K extends keyof ClientPayload>(
     field: K,
     value: ClientPayload[K],
@@ -120,6 +134,10 @@ const ClientDialog = ({
               <CustomInput
                 label="Name"
                 disabled={isViewMode}
+                className={getHighlightedFieldClassName(
+                  highlightedFields,
+                  "business_name",
+                )}
                 value={form.business_name}
                 onChange={(e) => updateField("business_name", e.target.value)}
               />
@@ -158,7 +176,7 @@ const ClientDialog = ({
                 disabled={isViewMode}
                 valueSelect={form.status}
                 onValueChange={(v) => updateField("status", v as Status)}
-                options={STATUS}
+                options={STATUSES}
                 triggerStyles={STATUS_STYLES}
                 colors={STATUS_COLORS}
               />
@@ -166,6 +184,10 @@ const ClientDialog = ({
                 label="Contract start"
                 type="date"
                 disabled={isViewMode}
+                className={getHighlightedFieldClassName(
+                  highlightedFields,
+                  "contract_start_date",
+                )}
                 value={form.contract_start_date || ""}
                 onChange={(e) =>
                   updateField("contract_start_date", e.target.value)
@@ -175,6 +197,10 @@ const ClientDialog = ({
                 label="Contract end"
                 type="date"
                 disabled={isViewMode}
+                className={getHighlightedFieldClassName(
+                  highlightedFields,
+                  "contract_end_date",
+                )}
                 value={form.contract_end_date || ""}
                 onChange={(e) =>
                   updateField("contract_end_date", e.target.value)
@@ -199,6 +225,9 @@ const ClientDialog = ({
             pendingFiles={pendingFiles}
             setPendingFiles={setPendingFiles}
             client={client}
+            highlightedFields={highlightedFields}
+            isExtractingData={isExtractingData}
+            onLoadDataFromDocuments={() => void handleLoadDataFromDocuments()}
           />
 
           <div className="flex justify-end gap-3">

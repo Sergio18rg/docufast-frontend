@@ -23,7 +23,7 @@ import type { DialogMode, VehiclePayload, VehicleSummary } from "@/types";
 import { EMPTY_FORM, PREDEFINED_DOCUMENTS, TABLE } from "./constants";
 import { companyBadgeStyle } from "./utils";
 import { VehicleDialog, buildPayload, mapVehicleToForm } from "./components";
-import { DIALOG_MODES, DOCUMENT_STATUS } from "../constants";
+import { DIALOG_MODES, DOCUMENT_STATUS, STATUS } from "../constants";
 import {
   getDocumentByKey,
   getDocumentVisual,
@@ -164,8 +164,8 @@ const VehiclesPage = () => {
     const search = searchTerm.trim().toLowerCase();
     return vehicles.filter((vehicle) => {
       const matchesStatus = showActive
-        ? vehicle.status === "Active"
-        : vehicle.status === "Inactive";
+        ? vehicle.status === STATUS.ACTIVE
+        : vehicle.status === STATUS.INACTIVE;
       if (!matchesStatus) return false;
       if (!search) return true;
       const workers = (vehicle.current_workers ?? [])
@@ -237,11 +237,11 @@ const VehiclesPage = () => {
     ACTIONS: {
       onEdit: (vehicle: VehicleSummary) => openEditDialog(vehicle),
       onDelete: (vehicle: VehicleSummary) =>
-        vehicle.status === "Inactive"
+        vehicle.status === STATUS.INACTIVE
           ? handleRestore(vehicle)
           : handleDelete(vehicle),
       getDeleteIcon: (vehicle: VehicleSummary) =>
-        vehicle.status === "Inactive" ? ICONS.RESTORE : ICONS.DELETE,
+        vehicle.status === STATUS.INACTIVE ? ICONS.RESTORE : ICONS.DELETE,
     },
   };
 

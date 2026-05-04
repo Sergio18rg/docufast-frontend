@@ -1,5 +1,6 @@
 import { PredefinedDocument, WorkerDocument, WorkerPayload } from "@/types";
 import { createBaseDocument } from "../utils";
+import { STATUS } from "../constants";
 
 const PREDEFINED_DOCUMENTS = [
   { key: "identity_document", name: "Identity document", shortLabel: "ID" },
@@ -34,7 +35,7 @@ const EMPTY_FORM: WorkerPayload = {
   emergency_contact_phone: "",
   contract_start_date: "",
   contract_end_date: "",
-  status: "Active",
+  status: STATUS.ACTIVE,
   notes: "",
   client_id: null,
   current_vehicle_id: null,

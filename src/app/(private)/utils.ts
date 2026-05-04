@@ -3,6 +3,7 @@ import {
   Document,
   DocumentStatus,
   PredefinedDocument,
+  HighlightedFieldMap,
 } from "@/types";
 import {
   AlertTriangle,
@@ -93,6 +94,13 @@ const getDocumentByKey = <T extends { document_key: string }>(
 ): T | undefined =>
   documents?.find((document) => document.document_key === key);
 
+const HIGHLIGHTED_FIELD_CLASS = "bg-emerald-50 border-emerald-300";
+
+const getHighlightedFieldClassName = (
+  highlightedFields: HighlightedFieldMap,
+  fieldKey: string,
+) => (highlightedFields[fieldKey] ? HIGHLIGHTED_FIELD_CLASS : "");
+
 export {
   getDocumentVisual,
   vehicleBadgeStyle,
@@ -102,4 +110,5 @@ export {
   isImage,
   clientBadgeStyle,
   getDocumentByKey,
+  getHighlightedFieldClassName,
 };

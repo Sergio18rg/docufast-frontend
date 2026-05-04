@@ -18,6 +18,7 @@ import { PersonalData } from "./personal-data";
 import { CompanyData } from "./company-data";
 import { DocumentsData } from "./documents-data";
 import { getDialogTitle, normalizeDate } from "@/app/(private)/utils";
+import { useExtractDataFromDocuments } from "@/hooks";
 
 const normalizeWorkerDocuments = (documents: WorkerDocument[]) => {
   const predefined = PREDEFINED_DOCUMENTS.map((definition) => {
@@ -112,6 +113,15 @@ export const WorkerDialog = ({
     ? "Create worker"
     : "Save changes";
 
+  const { isExtractingData, highlightedFields, handleLoadDataFromDocuments } =
+    useExtractDataFromDocuments({
+      open,
+      entityType: "Worker",
+      form,
+      pendingFiles,
+      setForm,
+    });
+
   const updateField = <K extends keyof WorkerPayload>(
     field: K,
     value: WorkerPayload[K],
@@ -130,12 +140,14 @@ export const WorkerDialog = ({
           <PersonalData
             form={form}
             isViewMode={isViewMode}
+            highlightedFields={highlightedFields}
             updateField={updateField}
           />
 
           <CompanyData
             form={form}
             isViewMode={isViewMode}
+            highlightedFields={highlightedFields}
             updateField={updateField}
             worker={worker}
           />
@@ -148,6 +160,9 @@ export const WorkerDialog = ({
             pendingFiles={pendingFiles}
             setPendingFiles={setPendingFiles}
             worker={worker as Worker}
+            highlightedFields={highlightedFields}
+            isExtractingData={isExtractingData}
+            onLoadDataFromDocuments={() => void handleLoadDataFromDocuments()}
           />
 
           <div className="flex justify-end gap-3">

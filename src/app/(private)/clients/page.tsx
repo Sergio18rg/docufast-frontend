@@ -19,7 +19,7 @@ import {
   uploadClientDocument,
 } from "@/services";
 import type { ClientPayload, ClientSummary, DialogMode } from "@/types";
-import { DIALOG_MODES, DOCUMENT_STATUS } from "../constants";
+import { DIALOG_MODES, DOCUMENT_STATUS, STATUS } from "../constants";
 import { getDocumentByKey, getDocumentVisual } from "../utils";
 import { EMPTY_FORM, PREDEFINED_DOCUMENTS, TABLE } from "./constants";
 import { clientNameStyle } from "./utils";
@@ -160,8 +160,8 @@ const ClientsPage = () => {
     const search = searchTerm.trim().toLowerCase();
     return clients.filter((client) => {
       const matchesStatus = showActive
-        ? client.status === "Active"
-        : client.status === "Inactive";
+        ? client.status === STATUS.ACTIVE
+        : client.status === STATUS.INACTIVE;
       if (!matchesStatus) return false;
       if (!search) return true;
 
@@ -226,11 +226,11 @@ const ClientsPage = () => {
     ACTIONS: {
       onEdit: (client: ClientSummary) => openEditDialog(client),
       onDelete: (client: ClientSummary) =>
-        client.status === "Inactive"
+        client.status === STATUS.INACTIVE
           ? handleRestore(client)
           : handleDelete(client),
       getDeleteIcon: (client: ClientSummary) =>
-        client.status === "Inactive" ? ICONS.RESTORE : ICONS.DELETE,
+        client.status === STATUS.INACTIVE ? ICONS.RESTORE : ICONS.DELETE,
     },
   };
 

@@ -1,5 +1,6 @@
 import { PredefinedDocument, VehicleDocument, VehiclePayload } from "@/types";
 import { createBaseDocument } from "../utils";
+import { STATUS } from "../constants";
 
 const COMPANY_OWNER = {
   Rumofast: { color: "#16a34a" },
@@ -36,7 +37,7 @@ const EMPTY_FORM: VehiclePayload = {
   vehicle_type: "Dry",
   contract_start_date: "",
   contract_end_date: "",
-  status: "Active",
+  status: STATUS.ACTIVE,
   notes: "",
   documents: PREDEFINED_DOCUMENTS.map((d) => EMPTY_DOCUMENT(d)),
 };

@@ -7,7 +7,13 @@ const VEHICLE_TYPE = {
   Other: { label: "Other", color: "#b59be8" },
 };
 
-const STATUS: Status[] = ["Active", "Absence", "Inactive"];
+const STATUSES: Status[] = ["Active", "Absence", "Inactive"];
+
+const STATUS: Record<string, Status> = {
+  ACTIVE: "Active",
+  ABSENCE: "Absence",
+  INACTIVE: "Inactive",
+};
 
 const SECURITY_LEVELS: SecurityLevel[] = ["Internal", "Private", "External"];
 
@@ -52,11 +58,12 @@ const SECURITY_LEVEL_STYLES: Record<SecurityLevel, string> = {
 export {
   VEHICLE_TYPE,
   DIALOG_MODES,
-  STATUS,
+  STATUSES,
   SECURITY_LEVELS,
   STATUS_STYLES,
   STATUS_COLORS,
   DOCUMENT_STATUS,
   SECURITY_LEVEL_COLORS,
   SECURITY_LEVEL_STYLES,
+  STATUS,
 };
