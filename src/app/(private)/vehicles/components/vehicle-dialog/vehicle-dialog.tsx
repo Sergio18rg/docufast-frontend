@@ -66,16 +66,6 @@ export const mapVehicleToForm = (vehicle: VehicleSummary): VehiclePayload => ({
   ],
 });
 
-export const buildPayload = (form: VehiclePayload): VehiclePayload => ({
-  ...form,
-  documents: form.documents.map((document) => ({
-    ...document,
-    issue_date: document.issue_date || new Date().toISOString().slice(0, 10),
-    expiration_date:
-      document.expiration_date || new Date().toISOString().slice(0, 10),
-  })),
-});
-
 const VehicleDialog = ({
   open,
   mode,

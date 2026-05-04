@@ -1,11 +1,10 @@
 import type { Worker } from "@/types";
 import { ICONS } from "@/components/shared/custom-button";
 import { PREDEFINED_DOCUMENTS } from "../constants";
-import { DOCUMENT_STATUS, STATUS } from "../../constants";
+import { STATUS } from "../../constants";
 import {
   clientBadgeStyle,
-  getDocumentByKey,
-  getDocumentVisual,
+  mapDocumentsForTable,
   vehicleBadgeStyle,
 } from "../../utils";
 import { mapClientWorkerDocumentsForTable } from "../utils";
@@ -118,21 +117,10 @@ const useTableRows = ({
         key: "documents",
         render: "DocumentsCell",
         getProps: (worker: Worker) => ({
-          documents: PREDEFINED_DOCUMENTS.map((definition) => {
-            const document = getDocumentByKey(
-              worker.documents,
-              definition.key,
-            ) ?? {
-              status: DOCUMENT_STATUS.NOT_UPLOADED,
-            };
-            const visual = getDocumentVisual(document.status);
-            return {
-              key: definition.key,
-              label: definition.shortLabel,
-              icon: visual.icon,
-              color: visual.color,
-            };
-          }),
+          documents: mapDocumentsForTable(
+            worker.documents,
+            PREDEFINED_DOCUMENTS,
+          ),
         }),
       },
     ],

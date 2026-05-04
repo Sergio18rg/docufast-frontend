@@ -72,16 +72,6 @@ export const mapWorkerToForm = (worker: Worker): WorkerPayload => ({
   documents: normalizeWorkerDocuments(worker.documents),
 });
 
-export const buildPayload = (form: WorkerPayload): WorkerPayload => ({
-  ...form,
-  documents: form.documents.map((document) => ({
-    ...document,
-    issue_date: document.issue_date || new Date().toISOString().slice(0, 10),
-    expiration_date:
-      document.expiration_date || new Date().toISOString().slice(0, 10),
-  })),
-});
-
 export const WorkerDialog = ({
   open,
   mode,

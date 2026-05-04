@@ -1,5 +1,5 @@
 import { PredefinedDocument, WorkerDocument, WorkerPayload } from "@/types";
-import { createBaseDocument } from "../utils";
+import { createEmptyDocument } from "../utils";
 import { STATUS } from "../constants";
 
 const PREDEFINED_DOCUMENTS = [
@@ -15,10 +15,8 @@ const PREDEFINED_DOCUMENTS = [
   { key: "driver_report", name: "Driver report", shortLabel: "Report" },
 ];
 
-const EMPTY_DOCUMENT = (definition?: PredefinedDocument): WorkerDocument => ({
-  worker_document_id: null,
-  ...createBaseDocument(definition),
-});
+const EMPTY_DOCUMENT = (definition?: PredefinedDocument): WorkerDocument =>
+  createEmptyDocument<WorkerDocument>(definition, { worker_document_id: null });
 
 const EMPTY_FORM: WorkerPayload = {
   company_worker_code: "",

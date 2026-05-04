@@ -1,5 +1,5 @@
 import { STATUS } from "../constants";
-import { createBaseDocument } from "../utils";
+import { createEmptyDocument } from "../utils";
 import type {
   ClientDocument,
   ClientPayload,
@@ -10,10 +10,8 @@ const PREDEFINED_DOCUMENTS: PredefinedDocument[] = [
   { key: "client_contract", name: "Contract", shortLabel: "CTR" },
 ];
 
-const EMPTY_DOCUMENT = (definition?: PredefinedDocument): ClientDocument => ({
-  ...createBaseDocument(definition),
-  client_document_id: null,
-});
+const EMPTY_DOCUMENT = (definition?: PredefinedDocument): ClientDocument =>
+  createEmptyDocument<ClientDocument>(definition, { client_document_id: null });
 
 const EMPTY_FORM: ClientPayload = {
   client_code: "",

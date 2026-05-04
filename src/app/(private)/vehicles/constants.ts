@@ -1,5 +1,5 @@
 import { PredefinedDocument, VehicleDocument, VehiclePayload } from "@/types";
-import { createBaseDocument } from "../utils";
+import { createEmptyDocument } from "../utils";
 import { STATUS } from "../constants";
 
 const COMPANY_OWNER = {
@@ -26,10 +26,10 @@ const PREDEFINED_DOCUMENTS = [
   { key: "certificate", name: "Certificate", shortLabel: "Cert" },
 ];
 
-const EMPTY_DOCUMENT = (definition?: PredefinedDocument): VehicleDocument => ({
-  vehicle_document_id: null,
-  ...createBaseDocument(definition),
-});
+const EMPTY_DOCUMENT = (definition?: PredefinedDocument): VehicleDocument =>
+  createEmptyDocument<VehicleDocument>(definition, {
+    vehicle_document_id: null,
+  });
 
 const EMPTY_FORM: VehiclePayload = {
   license_plate: "",

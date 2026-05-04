@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  buildPayload,
   ExternalWorkerDialog,
   mapWorkerToForm,
   WorkerDialog,
@@ -25,6 +24,7 @@ import { CustomTable, Title, ToggleButton } from "@/components";
 import { DIALOG_MODES, STATUS } from "../constants";
 import { ROLES } from "@/constants";
 import { useTableRows } from "./hooks";
+import { buildDocumentPayload } from "../utils";
 
 const WorkersPage = () => {
   const { token, user } = useAuth();
@@ -106,7 +106,7 @@ const WorkersPage = () => {
     setIsSaving(true);
     setErrorMessage("");
     try {
-      const payload = buildPayload(form);
+      const payload = buildDocumentPayload(form);
       const workerResponse =
         dialogMode === DIALOG_MODES.EDIT && selectedWorker
           ? await updateWorker(token, selectedWorker.worker_id, payload)

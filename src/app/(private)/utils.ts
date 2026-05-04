@@ -53,6 +53,8 @@ const vehicleBadgeStyle = (type?: string) => {
   return { backgroundColor: color, borderColor: color, color: "#1f2937" };
 };
 
+const getISODate = () => new Date().toISOString().slice(0, 10);
+
 const createBaseDocument = (definition?: PredefinedDocument): Document => ({
   document_key:
     definition?.key ?? `additional-${Math.random().toString(36).slice(2, 10)}`,
@@ -60,8 +62,8 @@ const createBaseDocument = (definition?: PredefinedDocument): Document => ({
   is_predefined: !!definition,
   security_level: "Private",
   status: DOCUMENT_STATUS.NOT_UPLOADED,
-  issue_date: new Date().toISOString().slice(0, 10),
-  expiration_date: new Date().toISOString().slice(0, 10),
+  issue_date: getISODate(),
+  expiration_date: getISODate(),
   notes: "",
   file_name: null,
   file_url: null,
@@ -94,12 +96,51 @@ const getDocumentByKey = <T extends { document_key: string }>(
 ): T | undefined =>
   documents?.find((document) => document.document_key === key);
 
+const mapDocumentsForTable = <T extends { document_key: string; status?: DocumentStatus }>(
+  documents: T[] | undefined,
+  predefinedDocuments: PredefinedDocument[],
+) =>
+  predefinedDocuments.map((definition) => {
+    const document = getDocumentByKey(documents, definition.key) ?? {
+      status: DOCUMENT_STATUS.NOT_UPLOADED,
+    };
+    const visual = getDocumentVisual(document.status ?? DOCUMENT_STATUS.NOT_UPLOADED);
+    return {
+      key: definition.key,
+      label: definition.shortLabel || definition.name,
+      icon: visual.icon,
+      color: visual.color,
+    };
+  });
+
 const HIGHLIGHTED_FIELD_CLASS = "bg-emerald-50 border-emerald-300";
 
 const getHighlightedFieldClassName = (
   highlightedFields: HighlightedFieldMap,
   fieldKey: string,
 ) => (highlightedFields[fieldKey] ? HIGHLIGHTED_FIELD_CLASS : "");
+
+// Factory genérica para crear documentos vacíos con el ID específico
+const createEmptyDocument = <T extends Document>(
+  definition?: PredefinedDocument,
+  documentIdField?: Partial<T>,
+): T =>
+  ({
+    ...createBaseDocument(definition),
+    ...documentIdField,
+  }) as T;
+
+// Funcion genérica para build payload con fechas normalizadas
+const buildDocumentPayload = <T extends { documents: Document[] }>(
+  form: T,
+): T => ({
+  ...form,
+  documents: form.documents.map((document) => ({
+    ...document,
+    issue_date: document.issue_date || getISODate(),
+    expiration_date: document.expiration_date || getISODate(),
+  })),
+});
 
 export {
   getDocumentVisual,
@@ -110,5 +151,8 @@ export {
   isImage,
   clientBadgeStyle,
   getDocumentByKey,
+  mapDocumentsForTable,
   getHighlightedFieldClassName,
+  createEmptyDocument,
+  buildDocumentPayload,
 };

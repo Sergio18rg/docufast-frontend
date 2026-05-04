@@ -22,11 +22,11 @@ import {
 import type { DialogMode, VehiclePayload, VehicleSummary } from "@/types";
 import { EMPTY_FORM, PREDEFINED_DOCUMENTS, TABLE } from "./constants";
 import { companyBadgeStyle } from "./utils";
-import { VehicleDialog, buildPayload, mapVehicleToForm } from "./components";
-import { DIALOG_MODES, DOCUMENT_STATUS, STATUS } from "../constants";
+import { VehicleDialog, mapVehicleToForm } from "./components";
+import { DIALOG_MODES, STATUS } from "../constants";
 import {
-  getDocumentByKey,
-  getDocumentVisual,
+  buildDocumentPayload,
+  mapDocumentsForTable,
   vehicleBadgeStyle,
 } from "../utils";
 
@@ -105,7 +105,7 @@ const VehiclesPage = () => {
     if (!token) return;
     setIsSaving(true);
     try {
-      const payload = buildPayload(form);
+      const payload = buildDocumentPayload(form);
       let currentVehicle =
         dialogMode === DIALOG_MODES.EDIT && selectedVehicle
           ? (await updateVehicle(token, selectedVehicle.vehicle_id, payload))
@@ -218,19 +218,10 @@ const VehiclesPage = () => {
         key: "documents",
         render: "DocumentsCell",
         getProps: (vehicle: VehicleSummary) => ({
-          documents: PREDEFINED_DOCUMENTS.map((definition) => {
-            const document = getDocumentByKey(
-              vehicle.documents,
-              definition.key,
-            ) ?? { status: DOCUMENT_STATUS.NOT_UPLOADED };
-            const visual = getDocumentVisual(document.status);
-            return {
-              key: definition.key,
-              label: definition.shortLabel,
-              icon: visual.icon,
-              color: visual.color,
-            };
-          }),
+          documents: mapDocumentsForTable(
+            vehicle.documents,
+            PREDEFINED_DOCUMENTS,
+          ),
         }),
       },
     ],

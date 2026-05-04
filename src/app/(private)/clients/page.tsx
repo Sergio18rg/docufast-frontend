@@ -19,11 +19,11 @@ import {
   uploadClientDocument,
 } from "@/services";
 import type { ClientPayload, ClientSummary, DialogMode } from "@/types";
-import { DIALOG_MODES, DOCUMENT_STATUS, STATUS } from "../constants";
-import { getDocumentByKey, getDocumentVisual } from "../utils";
+import { DIALOG_MODES, STATUS } from "../constants";
+import { buildDocumentPayload, mapDocumentsForTable } from "../utils";
 import { EMPTY_FORM, PREDEFINED_DOCUMENTS, TABLE } from "./constants";
 import { clientNameStyle } from "./utils";
-import { ClientDialog, buildPayload, mapClientToForm } from "./components";
+import { ClientDialog, mapClientToForm } from "./components";
 
 const ClientsPage = () => {
   const { token } = useAuth();
@@ -102,7 +102,7 @@ const ClientsPage = () => {
     if (!token) return;
     setIsSaving(true);
     try {
-      const payload = buildPayload(form);
+      const payload = buildDocumentPayload(form);
       let currentClient =
         dialogMode === DIALOG_MODES.EDIT && selectedClient
           ? (await updateClient(token, selectedClient.client_id, payload)).data
@@ -207,19 +207,10 @@ const ClientsPage = () => {
         key: "documents",
         render: "DocumentsCell",
         getProps: (client: ClientSummary) => ({
-          documents: PREDEFINED_DOCUMENTS.map((definition) => {
-            const document = getDocumentByKey(
-              client.documents,
-              definition.key,
-            ) ?? { status: DOCUMENT_STATUS.NOT_UPLOADED };
-            const visual = getDocumentVisual(document.status);
-            return {
-              key: definition.key,
-              label: definition.shortLabel || definition.name,
-              icon: visual.icon,
-              color: visual.color,
-            };
-          }),
+          documents: mapDocumentsForTable(
+            client.documents,
+            PREDEFINED_DOCUMENTS,
+          ),
         }),
       },
     ],

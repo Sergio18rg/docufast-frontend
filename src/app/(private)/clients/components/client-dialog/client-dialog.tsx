@@ -58,16 +58,6 @@ export const mapClientToForm = (client: ClientSummary): ClientPayload => ({
   ],
 });
 
-export const buildPayload = (form: ClientPayload): ClientPayload => ({
-  ...form,
-  documents: form.documents.map((document) => ({
-    ...document,
-    issue_date: document.issue_date || new Date().toISOString().slice(0, 10),
-    expiration_date:
-      document.expiration_date || new Date().toISOString().slice(0, 10),
-  })),
-});
-
 const ClientDialog = ({
   open,
   mode,
