@@ -6,11 +6,11 @@ describe("CustomButton", () => {
     render(<CustomButton text="Click me" />);
     expect(
       screen.getByRole("button", { name: /click me/i }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("should render button with icon and text", () => {
     render(<CustomButton text="Add" icon={ICONS.ADD} />);
-    expect(screen.getByRole("button", { name: /add/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /add/i })).toBeVisible();
   });
 });

@@ -24,10 +24,10 @@ describe("VehiclesPage", () => {
     renderWithAuth(<VehiclesPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("Vehicles")).toBeInTheDocument();
+      expect(screen.getByText("Vehicles")).toBeVisible();
       expect(
         screen.getByPlaceholderText(/search by vehicle id/i),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 
@@ -39,6 +39,6 @@ describe("VehiclesPage", () => {
     const addButton = await screen.findByText("Add vehicle");
     await user.click(addButton);
 
-    expect(await screen.findByText("Create Vehicle")).toBeInTheDocument();
+    expect(await screen.findByText("Create Vehicle")).toBeVisible();
   });
 });

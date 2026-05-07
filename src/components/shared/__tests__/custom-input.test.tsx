@@ -5,13 +5,13 @@ describe("CustomInput", () => {
   it("should render label and input", () => {
     render(<CustomInput label="Email" value="" onChange={jest.fn()} />);
 
-    expect(screen.getByText("Email")).toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByText("Email")).toBeVisible();
+    expect(screen.getByRole("textbox")).toBeVisible();
   });
 
   it("should display value", () => {
     render(<CustomInput label="Name" value="John Doe" onChange={jest.fn()} />);
 
-    expect(screen.getByDisplayValue("John Doe")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("John Doe")).toBeVisible();
   });
 });

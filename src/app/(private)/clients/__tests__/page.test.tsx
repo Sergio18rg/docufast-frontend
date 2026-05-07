@@ -24,10 +24,8 @@ describe("ClientsPage", () => {
     renderWithAuth(<ClientsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("Clients")).toBeInTheDocument();
-      expect(
-        screen.getByPlaceholderText(/search by client id/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Clients")).toBeVisible();
+      expect(screen.getByPlaceholderText(/search by client id/i)).toBeVisible();
     });
   });
 
@@ -39,6 +37,6 @@ describe("ClientsPage", () => {
     const addButton = await screen.findByText("Add client");
     await user.click(addButton);
 
-    expect(await screen.findByText("Create Client")).toBeInTheDocument();
+    expect(await screen.findByText("Create Client")).toBeVisible();
   });
 });
