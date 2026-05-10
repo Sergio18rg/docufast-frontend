@@ -114,9 +114,13 @@ npm install
 
 ### Environment variables
 
-Create .env.local file:
+Create a `.env.local` file in the root directory (optional):
 
-NEXT_PUBLIC_API_URL or "http://localhost:4000/api" default
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
+
+**Note:** If not specified, the application defaults to `http://localhost:4000/api`. Only set the variable if the backend runs in a different URL
 
 ---
 
@@ -131,20 +135,29 @@ http://localhost:3000
 
 ## Test Users
 
-Must be created in the backend. Read README.md
+These users are created automatically when seeding the backend database.
 
-| Role          | Email                 | Password      |
-| ------------- | --------------------- | ------------- |
-| Administrator | admin@docufast.com    | Admin1234!    |
-| Worker        | worker@docufast.com   | Worker1234!   |
-| External      | external@docufast.com | External1234! |
+| Role          | Email                    | Password      |
+| ------------- | ------------------------ | ------------- |
+| Administrator | admin@docufast.com       | Admin1234!    |
+| Worker        | laura.gomez@docufast.com | Laura1234     |
+| External      | external@docufast.com    | External1234! |
+
+**Note:** Additional worker accounts are created during seeding (Carlos, Ana, Miguel). Worker passwords follow the pattern: `{FirstName}1234`.
 
 ---
 
 ## Available Scripts
 
-- npm run dev
-- npm run start
+```bash
+npm run dev          # Start development server with hot reload
+npm run build        # Build production bundle
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run test         # Run tests
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
+```
 
 ---
 
