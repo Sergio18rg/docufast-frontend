@@ -25,8 +25,8 @@ export const LoginForm = ({
   const router = useRouter();
   const { login } = useAuth();
 
-  const [email, setEmail] = useState("admin@docufast.com");
-  const [password, setPassword] = useState("Admin1234!");
+  const [email, setEmail] = useState("yourEmail@docufast.com");
+  const [password, setPassword] = useState("");
   const [pendingToken, setPendingToken] = useState<string | null>(null);
   const [pendingRole, setPendingRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
