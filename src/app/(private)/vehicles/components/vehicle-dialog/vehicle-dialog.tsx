@@ -12,6 +12,7 @@ import {
   CustomButton,
   CustomInput,
   CustomSelect,
+  ErrorMessage,
 } from "@/components";
 import type {
   VehiclePayload,
@@ -77,6 +78,7 @@ const VehicleDialog = ({
   isSaving,
   onClose,
   onSubmit,
+  errorMessage,
 }: {
   open: boolean;
   mode: DialogMode;
@@ -90,6 +92,7 @@ const VehicleDialog = ({
   isSaving: boolean;
   onClose: () => void;
   onSubmit: () => Promise<void> | void;
+  errorMessage?: string;
 }) => {
   const isViewMode = mode === DIALOG_MODES.VIEW;
   const { isExtractingData, highlightedFields, handleLoadDataFromDocuments } =
@@ -110,11 +113,12 @@ const VehicleDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-5xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-5xl pt-0">
+        <DialogHeader className="sticky top-0 z-10 bg-white pb-4 pt-4">
+          <DialogTitle className="text-2xl font-semibold pl-2">
             {getDialogTitle(mode, "Vehicle")}
           </DialogTitle>
+          {errorMessage && <ErrorMessage message={errorMessage} />}
         </DialogHeader>
         <div className="space-y-6">
           <Card>

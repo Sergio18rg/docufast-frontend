@@ -130,6 +130,9 @@ const WorkersPage = () => {
       setErrorMessage(
         error instanceof Error ? error.message : "Unable to save worker",
       );
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
     } finally {
       setIsSaving(false);
     }
@@ -276,6 +279,7 @@ const WorkersPage = () => {
           isSaving={isSaving}
           onClose={closeDialog}
           onSubmit={handleSubmit}
+          errorMessage={errorMessage}
         />
       )}
     </div>

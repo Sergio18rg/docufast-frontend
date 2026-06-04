@@ -36,3 +36,4 @@ export * from "./shared/custom-table";
 export * from "./shared/custom-input";
 export * from "./shared/serchable-select";
 export * from "./shared/custom-select";
+export * from "./shared/error-message";

@@ -123,6 +123,9 @@ const ClientsPage = () => {
       setErrorMessage(
         error instanceof Error ? error.message : "Unable to save client",
       );
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
     } finally {
       setIsSaving(false);
     }
@@ -272,6 +275,7 @@ const ClientsPage = () => {
         isSaving={isSaving}
         onClose={closeDialog}
         onSubmit={handleSubmit}
+        errorMessage={errorMessage}
       />
     </div>
   );

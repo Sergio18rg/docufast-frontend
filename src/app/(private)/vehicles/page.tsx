@@ -127,6 +127,9 @@ const VehiclesPage = () => {
       setErrorMessage(
         error instanceof Error ? error.message : "Unable to save vehicle",
       );
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
     } finally {
       setIsSaving(false);
     }
@@ -283,6 +286,7 @@ const VehiclesPage = () => {
         isSaving={isSaving}
         onClose={closeDialog}
         onSubmit={handleSubmit}
+        errorMessage={errorMessage}
       />
     </div>
   );
